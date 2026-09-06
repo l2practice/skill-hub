@@ -1,315 +1,677 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Language Hub — Practice All 4 Skills</title>
+  <title>English Skills Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet" />
 
   <!--
     Language Hub — Student Landing Page
-    Author: Thanh-Tu / DNU
-    To update app links: find the 4 <a class="skill-card"> elements below
-    and change each href="..." value.
+    Author: Thanh-Tu / L2 Practice
+    ─────────────────────────────────────
+    APP LINKS: change href="..." on each <a class="card">.
+    TODAY'S WORD sheet:
+      ID:  1xfo-4X7weCJ93BMvhR1C1qHfjLGqlq46IieSa6u__1w
+      GID: 2064115865
+      Cols: A=Word B=IPA C=Level D=Meaning_VI E=Synonyms F=Example1 G=Example2
+    Word changes every page visit (random pick, stored in sessionStorage
+    so refreshing in the same tab keeps it stable; new tab = new word).
+    Previous word = last session's word, stored in localStorage.
+    ─────────────────────────────────────
   -->
 
   <style>
-    /* =============================================
-       DESIGN TOKENS
-    ============================================= */
+    /* ── TOKENS: dark ── */
     :root {
-      --bg:           #F7F8FA;
-      --text-head:    #1A1A2E;
+      --bg:           #0F1629;
+      --bg-glow:      rgba(99,102,241,0.18);
+      --bg-card:      rgba(255,255,255,0.055);
+      --bg-info:      rgba(255,255,255,0.06);
+      --bg-word:      linear-gradient(135deg,#3730a3 0%,#4f46e5 50%,#6d28d9 100%);
+      --border:       rgba(255,255,255,0.10);
+      --border-w:     rgba(255,255,255,0.18);
+      --text-h:       #FFFFFF;
+      --text-sub:     rgba(255,255,255,0.55);
+      --text-tag:     rgba(255,255,255,0.75);
+      --text-body:    rgba(255,255,255,0.85);
+      --text-muted:   rgba(255,255,255,0.40);
+      --c-listen:     #3B82F6;
+      --c-speak:      #22C55E;
+      --c-vocab:      #F97316;
+      --c-write:      #A855F7;
+      --g-listen:     rgba(59,130,246,0.30);
+      --g-speak:      rgba(34,197,94,0.30);
+      --g-vocab:      rgba(249,115,22,0.30);
+      --g-write:      rgba(168,85,247,0.30);
+      --radius:       22px;
+      --tr:           0.22s ease;
+    }
+
+    /* ── TOKENS: light ── */
+    [data-theme="light"] {
+      --bg:           #EEF2FF;
+      --bg-glow:      rgba(99,102,241,0.08);
+      --bg-card:      #FFFFFF;
+      --bg-info:      #FFFFFF;
+      --bg-word:      linear-gradient(135deg,#3730a3 0%,#4f46e5 50%,#6d28d9 100%);
+      --border:       rgba(0,0,0,0.08);
+      --border-w:     rgba(99,102,241,0.25);
+      --text-h:       #0F1629;
       --text-sub:     #6B7280;
-      --text-card:    #FFFFFF;
-      --shadow:       0 4px 20px rgba(0, 0, 0, 0.08);
-      --shadow-hover: 0 10px 32px rgba(0, 0, 0, 0.16);
-      --radius:       20px;
-      --transition:   0.22s ease;
-
-      /* Per-skill colors */
-      --listening:    #2563EB;  /* blue   */
-      --speaking:     #16A34A;  /* green  */
-      --vocab:        #EA580C;  /* orange */
-      --writing:      #7C3AED;  /* purple */
+      --text-tag:     #374151;
+      --text-body:    #374151;
+      --text-muted:   #9CA3AF;
+      --g-listen:     rgba(59,130,246,0.08);
+      --g-speak:      rgba(34,197,94,0.08);
+      --g-vocab:      rgba(249,115,22,0.08);
+      --g-write:      rgba(168,85,247,0.08);
     }
 
-    /* =============================================
-       RESET & BASE
-    ============================================= */
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    /* ── RESET ── */
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-                   "Helvetica Neue", Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text-head);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+      background:var(--bg);
+      color:var(--text-h);
+      min-height:100vh;
+      display:flex; flex-direction:column; align-items:center;
+      transition:background 0.3s,color 0.3s;
+      background-image:radial-gradient(ellipse 80% 50% at 50% -10%,var(--bg-glow) 0%,transparent 70%);
     }
 
-    /* =============================================
-       HEADER
-    ============================================= */
+    /* ── TOP BAR ── */
+    .top-bar {
+      width:100%; max-width:720px;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:20px 24px 0;
+    }
+    .brand {
+      font-size:0.7rem; font-weight:600; letter-spacing:0.12em;
+      color:var(--text-muted); text-transform:uppercase;
+    }
+    .theme-btn {
+      background:var(--bg-info); border:1px solid var(--border);
+      border-radius:99px; padding:6px 14px;
+      font-size:0.75rem; font-weight:600; color:var(--text-sub);
+      cursor:pointer; display:flex; align-items:center; gap:6px;
+      transition:background var(--tr),color var(--tr);
+    }
+    .theme-btn:hover { background:var(--border); color:var(--text-h); }
+
+    /* ── INFO BAR ── */
+    .info-bar {
+      width:100%; max-width:720px;
+      padding:14px 24px 0;
+      display:flex; gap:10px; flex-wrap:wrap;
+    }
+    .info-chip {
+      display:flex; align-items:center; gap:7px;
+      background:var(--bg-info); border:1px solid var(--border);
+      border-radius:99px; padding:6px 14px;
+      font-size:0.78rem; font-weight:500; color:var(--text-body);
+      transition:background var(--tr);
+    }
+    .chip-icon { font-size:0.95rem; line-height:1; }
+    #clock-time { font-variant-numeric:tabular-nums; font-weight:600; color:var(--text-h); }
+
+    /* ── HEADER ── */
     header {
-      width: 100%;
-      text-align: center;
-      padding: 56px 24px 32px;
+      width:100%; max-width:720px;
+      padding:24px 32px 28px; text-align:center;
     }
-
-    /* Four-color accent bar above the title */
-    .header-accent {
-      display: flex;
-      justify-content: center;
-      gap: 6px;
-      margin-bottom: 20px;
-    }
-
-    .header-accent span {
-      display: block;
-      width: 28px;
-      height: 5px;
-      border-radius: 99px;
-    }
-
-    .header-accent span:nth-child(1) { background: var(--listening); }
-    .header-accent span:nth-child(2) { background: var(--speaking); }
-    .header-accent span:nth-child(3) { background: var(--vocab); }
-    .header-accent span:nth-child(4) { background: var(--writing); }
-
     header h1 {
-      font-size: clamp(1.75rem, 5vw, 2.75rem);
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.15;
-      color: var(--text-head);
+      font-size:clamp(2rem,6vw,3rem); font-weight:800;
+      color:var(--text-h); letter-spacing:-0.04em; line-height:1.1;
+    }
+    header p { margin-top:10px; font-size:1rem; color:var(--text-sub); }
+
+    /* ── TODAY'S WORD CARD ── */
+    .word-card {
+      width:calc(100% - 48px); max-width:720px;
+      margin:0 24px 20px;
+      background:var(--bg-word);
+      border-radius:var(--radius);
+      padding:22px 24px;
+      position:relative; overflow:hidden;
+      /* white text always — gradient bg is always dark */
+      color:#fff;
     }
 
-    header p {
-      margin-top: 10px;
-      font-size: 1rem;
-      color: var(--text-sub);
-      font-weight: 400;
+    /* Soft noise/glow top-right */
+    .word-card::before {
+      content:'';
+      position:absolute; top:-40px; right:-40px;
+      width:200px; height:200px; border-radius:50%;
+      background:rgba(255,255,255,0.08);
+      filter:blur(50px); pointer-events:none;
     }
 
-    /* =============================================
-       SKILL GRID — 2x2 on desktop
-    ============================================= */
+    /* Inner layout: main left | previous right */
+    .word-inner {
+      display:flex; gap:16px; align-items:flex-start;
+    }
+    .word-main-col { flex:1; min-width:0; }
+    .word-prev-col {
+      flex:0 0 220px; max-width:220px;
+      background:rgba(255,255,255,0.10);
+      border:1px solid rgba(255,255,255,0.18);
+      border-radius:14px;
+      padding:14px 16px;
+      display:none; /* shown by JS when prev word exists */
+    }
+    .word-prev-label {
+      font-size:0.6rem; font-weight:700; letter-spacing:0.12em;
+      text-transform:uppercase; color:rgba(255,255,255,0.50);
+      margin-bottom:6px;
+    }
+    .word-prev-term {
+      font-size:1rem; font-weight:800; color:#fff;
+      letter-spacing:-0.02em; line-height:1.2; margin-bottom:4px;
+    }
+    .word-prev-vi {
+      font-size:0.75rem; color:rgba(255,255,255,0.60); line-height:1.4;
+    }
+
+    /* Main word area */
+    .word-eyebrow {
+      font-size:0.62rem; font-weight:700; letter-spacing:0.10em;
+      text-transform:uppercase; color:rgba(255,255,255,0.60);
+      margin-bottom:8px; display:flex; align-items:center; gap:6px;
+    }
+    .word-eyebrow::before {
+      content:'✦'; font-size:0.55rem;
+    }
+    .word-headline {
+      display:flex; align-items:baseline; flex-wrap:wrap; gap:10px;
+      margin-bottom:6px;
+    }
+    .word-term {
+      font-size:2rem; font-weight:800; color:#fff; letter-spacing:-0.03em;
+    }
+    .word-ipa {
+      font-size:0.9rem; color:rgba(255,255,255,0.65); font-weight:400;
+    }
+    .word-level {
+      font-size:0.7rem; font-weight:700;
+      background:rgba(255,255,255,0.20); color:#fff;
+      border:1px solid rgba(255,255,255,0.30);
+      padding:2px 9px; border-radius:99px;
+    }
+    .word-vi {
+      font-size:0.88rem; color:rgba(255,255,255,0.90);
+      margin-bottom:10px;
+      display:flex; align-items:center; gap:6px;
+    }
+    .word-vi::before { content:'🇻🇳'; font-size:0.85rem; }
+
+    .word-section-label {
+      font-size:0.58rem; font-weight:700; letter-spacing:0.10em;
+      text-transform:uppercase; color:rgba(255,255,255,0.45);
+      margin-bottom:5px; margin-top:10px;
+    }
+    .word-synonyms { display:flex; flex-wrap:wrap; gap:5px; }
+    .word-syn-pill {
+      font-size:0.72rem; font-weight:500;
+      background:rgba(255,255,255,0.12);
+      border:1px solid rgba(255,255,255,0.20);
+      color:rgba(255,255,255,0.85);
+      padding:3px 10px; border-radius:99px;
+    }
+    .word-examples {
+      display:flex; flex-direction:column; gap:5px; margin-top:4px;
+    }
+    .word-ex {
+      font-size:0.8rem; font-style:italic;
+      color:rgba(255,255,255,0.70); line-height:1.5;
+      padding-left:10px;
+      border-left:2px solid rgba(255,255,255,0.25);
+    }
+
+    /* Skeleton */
+    .word-skeleton { display:flex; flex-direction:column; gap:8px; }
+    .skel {
+      background:rgba(255,255,255,0.15); border-radius:6px;
+      animation:shimmer 1.4s ease infinite;
+    }
+    @keyframes shimmer { 0%,100%{opacity:0.3} 50%{opacity:0.7} }
+
+    /* ── SKILL GRID ── */
     .grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-      padding: 0 24px;
-      width: 100%;
-      max-width: 680px;
+      display:grid; grid-template-columns:repeat(2,1fr);
+      gap:16px; padding:0 24px;
+      width:100%; max-width:720px;
     }
 
-    /* =============================================
-       SKILL CARD
-    ============================================= */
-    .skill-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-
-      aspect-ratio: 1 / 1;
-      padding: 24px;
-
-      border-radius: var(--radius);
-      text-decoration: none;
-      color: var(--text-card);
-      box-shadow: var(--shadow);
-
-      transition: transform var(--transition),
-                  box-shadow var(--transition),
-                  filter var(--transition);
+    /* ── SKILL CARD BASE ── */
+    .card {
+      position:relative;
+      display:flex; flex-direction:column; justify-content:space-between;
+      padding:28px 28px 24px; min-height:220px;
+      border-radius:var(--radius);
+      text-decoration:none; color:var(--text-h); overflow:hidden;
+      background:var(--bg-card); border:1px solid var(--border);
+      opacity:0; transform:translateY(20px);
+      animation:cardIn 0.5s ease forwards;
+      transition:transform var(--tr), box-shadow var(--tr),
+                 background var(--tr), border-color var(--tr);
     }
 
-    /* Per-skill background colors */
-    .skill-card.listening { background: var(--listening); }
-    .skill-card.speaking  { background: var(--speaking); }
-    .skill-card.vocab     { background: var(--vocab); }
-    .skill-card.writing   { background: var(--writing); }
+    .card:nth-child(1){animation-delay:0.05s}
+    .card:nth-child(2){animation-delay:0.12s}
+    .card:nth-child(3){animation-delay:0.19s}
+    .card:nth-child(4){animation-delay:0.26s}
 
-    /* Hover: lift + brighten */
-    .skill-card:hover {
-      transform: translateY(-6px);
-      box-shadow: var(--shadow-hover);
-      filter: brightness(1.08);
+    @keyframes cardIn { to{opacity:1;transform:translateY(0)} }
+
+    /* Colored top stripe */
+    .card::before {
+      content:''; position:absolute; top:0; left:0; right:0;
+      height:3px; border-radius:var(--radius) var(--radius) 0 0;
     }
 
-    /* Active: press down */
-    .skill-card:active {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow);
-      filter: brightness(0.96);
+    /* Glow blob — DARK MODE only */
+    .card::after {
+      content:''; position:absolute; top:-30px; right:-30px;
+      width:120px; height:120px; border-radius:50%;
+      filter:blur(40px); opacity:0.5; pointer-events:none;
+      transition:opacity var(--tr);
     }
 
-    /* Icon */
-    .skill-icon {
-      font-size: clamp(2.4rem, 8vw, 3.2rem);
-      line-height: 1;
-      display: block;
-    }
+    /* ── DARK MODE hover: glow ── */
+    [data-theme="dark"] .card:hover { transform:translateY(-10px); }
+    [data-theme="dark"] .card:hover::after { opacity:1; }
+    [data-theme="dark"] .listen:hover { box-shadow:0 24px 60px var(--g-listen); }
+    [data-theme="dark"] .speak:hover  { box-shadow:0 24px 60px var(--g-speak); }
+    [data-theme="dark"] .vocab:hover  { box-shadow:0 24px 60px var(--g-vocab); }
+    [data-theme="dark"] .write:hover  { box-shadow:0 24px 60px var(--g-write); }
 
-    /* Skill name */
-    .skill-name {
-      font-size: clamp(1.1rem, 3.5vw, 1.35rem);
-      font-weight: 700;
-      letter-spacing: -0.01em;
+    /* ── LIGHT MODE hover: colored border + lift, no glow ── */
+    [data-theme="light"] .card {
+      box-shadow:0 2px 12px rgba(0,0,0,0.06);
     }
-
-    /* Tag pills — one per feature inside the card */
-    .skill-tags {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 5px;
-      margin-top: 2px;
+    [data-theme="light"] .card::after { display:none; } /* kill blob */
+    [data-theme="light"] .card:hover  {
+      transform:translateY(-8px);
+      box-shadow:0 12px 32px rgba(0,0,0,0.10);
     }
+    [data-theme="light"] .listen:hover { border-color:var(--c-listen); }
+    [data-theme="light"] .speak:hover  { border-color:var(--c-speak); }
+    [data-theme="light"] .vocab:hover  { border-color:var(--c-vocab); }
+    [data-theme="light"] .write:hover  { border-color:var(--c-write); }
 
+    .card:active { transform:translateY(-3px) !important; }
+
+    /* Per-skill stripes & blobs */
+    .listen::before{background:var(--c-listen)}  .listen::after{background:var(--g-listen)}
+    .speak::before {background:var(--c-speak)}   .speak::after {background:var(--g-speak)}
+    .vocab::before {background:var(--c-vocab)}   .vocab::after {background:var(--g-vocab)}
+    .write::before {background:var(--c-write)}   .write::after {background:var(--g-write)}
+
+    /* Card internals */
+    .card-icon { font-size:2.2rem; line-height:1; margin-bottom:auto; }
+    .card-body { margin-top:24px; }
+    .card-name {
+      font-size:1.3rem; font-weight:800;
+      letter-spacing:-0.02em; color:var(--text-h);
+    }
+    .card-name::before {
+      content:''; display:inline-block;
+      width:8px; height:8px; border-radius:50%;
+      margin-right:8px; vertical-align:middle;
+      position:relative; top:-1px;
+    }
+    .listen .card-name::before{background:var(--c-listen)}
+    .speak  .card-name::before{background:var(--c-speak)}
+    .vocab  .card-name::before{background:var(--c-vocab)}
+    .write  .card-name::before{background:var(--c-write)}
+
+    .card-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
     .tag {
-      font-size: 0.68rem;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-      padding: 3px 9px;
-      border-radius: 99px;
-      background: rgba(255, 255, 255, 0.22);
-      white-space: nowrap;
+      font-size:0.7rem; font-weight:500;
+      padding:4px 10px; border-radius:99px;
+      border:1px solid var(--border);
+      color:var(--text-tag); background:rgba(128,128,128,0.08);
     }
 
-    /* =============================================
-       FOOTER
-    ============================================= */
+    /* ── FOOTER ── */
     footer {
-      width: 100%;
-      text-align: center;
-      padding: 36px 24px 28px;
-      font-size: 0.8rem;
-      color: var(--text-sub);
+      width:100%; text-align:center;
+      padding:40px 24px 32px;
+      font-size:0.78rem; color:var(--text-muted);
+    }
+    .dot {
+      display:inline-block; width:3px; height:3px;
+      border-radius:50%; background:currentColor;
+      vertical-align:middle; margin:0 8px; opacity:0.5;
+      position:relative; top:-1px;
     }
 
-    /* =============================================
-       RESPONSIVE — narrow phones (< 440px)
-       Switch to single column, horizontal card layout
-    ============================================= */
-    @media (max-width: 440px) {
-      .grid {
-        grid-template-columns: 1fr;
-        max-width: 340px;
-      }
-
-      .skill-card {
-        aspect-ratio: auto;
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: center;
-        gap: 16px;
-        padding: 18px 22px;
-      }
-
-      .skill-icon { font-size: 2rem; flex-shrink: 0; }
-
-      .skill-name { font-size: 1.1rem; }
-
-      .skill-tags { justify-content: flex-start; }
+    /* ── RESPONSIVE ── */
+    @media(max-width:460px){
+      .info-bar{padding:10px 16px 0; gap:8px;}
+      .info-chip{font-size:0.72rem; padding:5px 11px;}
+      header{padding:18px 24px 22px;}
+      .word-card{width:calc(100% - 32px); margin:0 16px 16px; padding:18px;}
+      .word-prev-col{display:none !important;}
+      .word-term{font-size:1.5rem;}
+      .grid{grid-template-columns:1fr; max-width:400px; padding:0 16px;}
+      .card{min-height:auto; flex-direction:row; align-items:center; gap:20px; padding:20px 22px;}
+      .card::after{top:-20px;right:-20px;width:80px;height:80px;}
+      .card-icon{font-size:1.9rem;margin-bottom:0;flex-shrink:0;}
+      .card-body{margin-top:0;}
     }
 
-    /* =============================================
-       ACCESSIBILITY — reduced motion
-    ============================================= */
-    @media (prefers-reduced-motion: reduce) {
-      .skill-card { transition: none; }
+    @media(prefers-reduced-motion:reduce){
+      .card{animation:none;opacity:1;transform:none;transition:none;}
+      .skel{animation:none;opacity:0.4;}
     }
   </style>
 </head>
 
 <body>
 
-  <!-- ============ HEADER ============ -->
-  <header>
-    <div class="header-accent" aria-hidden="true">
-      <span></span><span></span><span></span><span></span>
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <span class="brand">Second Language Practice</span>
+    <button class="theme-btn" id="themeBtn" aria-label="Toggle theme">
+      <span id="themeIcon">☀️</span>
+      <span id="themeLabel">Light mode</span>
+    </button>
+  </div>
+
+  <!-- INFO BAR -->
+  <div class="info-bar">
+    <div class="info-chip">
+      <span class="chip-icon">📅</span>
+      <span id="clock-date">—</span>
     </div>
+    <div class="info-chip">
+      <span class="chip-icon">🕐</span>
+      <span id="clock-time">—</span>
+    </div>
+    <div class="info-chip" id="weather-chip" style="display:none">
+      <span class="chip-icon" id="weather-icon">🌤️</span>
+      <span id="weather-text">—</span>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header>
     <h1>English Skills Hub</h1>
     <p>Choose a skill to practise</p>
   </header>
 
-  <!-- ============ SKILL CARDS ============
-       To update a link: change the href="..." on each <a> below.
-  ============================================= -->
+  <!-- TODAY'S WORD -->
+  <div class="word-card" id="wordCard">
+    <div class="word-eyebrow">Today's Word</div>
+    <div class="word-inner">
+      <!-- Main word content -->
+      <div class="word-main-col">
+        <!-- Skeleton -->
+        <div class="word-skeleton" id="wordSkeleton">
+          <div class="skel" style="height:12px;width:80px"></div>
+          <div class="skel" style="height:36px;width:200px;margin-top:4px"></div>
+          <div class="skel" style="height:13px;width:100%;margin-top:8px"></div>
+          <div class="skel" style="height:13px;width:75%"></div>
+        </div>
+        <!-- Real content -->
+        <div id="wordContent" style="display:none"></div>
+      </div>
+      <!-- Previous word panel -->
+      <div class="word-prev-col" id="wordPrev">
+        <div class="word-prev-label">Previously</div>
+        <div class="word-prev-term" id="prevTerm"></div>
+        <div class="word-prev-vi"   id="prevVi"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SKILL CARDS -->
   <main>
     <div class="grid">
 
-      <!-- LISTENING -->
-      <a class="skill-card listening"
+      <a class="card listen"
          href="https://l2practice.github.io/listen-dictation"
-         target="_blank"
-         rel="noopener noreferrer"
+         target="_blank" rel="noopener noreferrer"
          aria-label="Listening — dictation practice">
-        <span class="skill-icon" aria-hidden="true">🎧</span>
-        <span class="skill-name">Listening</span>
-        <div class="skill-tags">
-          <span class="tag">Dictation</span>
+        <span class="card-icon" aria-hidden="true">🎧</span>
+        <div class="card-body">
+          <div class="card-name">Listening</div>
+          <div class="card-tags"><span class="tag">Dictation</span></div>
         </div>
       </a>
 
-      <!-- SPEAKING -->
-      <a class="skill-card speaking"
+      <a class="card speak"
          href="https://l2practice.github.io/fluentalk"
-         target="_blank"
-         rel="noopener noreferrer"
-         aria-label="Speaking — IELTS topics and Just a Minute">
-        <span class="skill-icon" aria-hidden="true">🎤</span>
-        <span class="skill-name">Speaking</span>
-        <div class="skill-tags">
-          <span class="tag">IELTS</span>
-          <span class="tag">JAM</span>
+         target="_blank" rel="noopener noreferrer"
+         aria-label="Speaking — IELTS and Just a Minute">
+        <span class="card-icon" aria-hidden="true">🎤</span>
+        <div class="card-body">
+          <div class="card-name">Speaking</div>
+          <div class="card-tags">
+            <span class="tag">IELTS Topics</span>
+            <span class="tag">Just a Minute</span>
+          </div>
         </div>
       </a>
 
-      <!-- VOCABULARY -->
-      <a class="skill-card vocab"
+      <a class="card vocab"
          href="https://l2practice.github.io/vocab-master"
-         target="_blank"
-         rel="noopener noreferrer"
+         target="_blank" rel="noopener noreferrer"
          aria-label="Vocabulary — practice and quizzes">
-        <span class="skill-icon" aria-hidden="true">📖</span>
-        <span class="skill-name">Vocabulary</span>
-        <div class="skill-tags">
-          <span class="tag">Practice</span>
-          <span class="tag">Quizzes</span>
+        <span class="card-icon" aria-hidden="true">📖</span>
+        <div class="card-body">
+          <div class="card-name">Vocabulary</div>
+          <div class="card-tags">
+            <span class="tag">Practice</span>
+            <span class="tag">Quizzes</span>
+          </div>
         </div>
       </a>
 
-      <!-- WRITING -->
-      <a class="skill-card writing"
-         href="https://https://l2practice.github.io/artwrite/login.html"
-         target="_blank"
-         rel="noopener noreferrer"
+      <a class="card write"
+         href="https://l2practice.github.io/artwrite/login.html"
+         target="_blank" rel="noopener noreferrer"
          aria-label="Writing — AI-assisted writing platform">
-        <span class="skill-icon" aria-hidden="true">✍️</span>
-        <span class="skill-name">Writing</span>
-        <div class="skill-tags">
-          <span class="tag">Practice</span>
-          <span class="tag">AI Support</span>
+        <span class="card-icon" aria-hidden="true">✍️</span>
+        <div class="card-body">
+          <div class="card-name">Writing</div>
+          <div class="card-tags">
+            <span class="tag">Practice</span>
+            <span class="tag">AI Support</span>
+          </div>
         </div>
       </a>
 
     </div>
   </main>
 
-  <!-- ============ FOOTER ============ -->
   <footer>
-    <p>© 2026 — For students</p>
+    <p>© 2026 Second Language Practice <span class="dot"></span> For students</p>
   </footer>
+
+  <script>
+  /* ── 1. THEME ── */
+  (function(){
+    var html=document.documentElement;
+    var btn=document.getElementById('themeBtn');
+    var icon=document.getElementById('themeIcon');
+    var lbl=document.getElementById('themeLabel');
+    var saved=localStorage.getItem('l2p-theme')||'dark';
+    html.setAttribute('data-theme',saved);
+    sync(saved);
+    btn.addEventListener('click',function(){
+      var next=html.getAttribute('data-theme')==='dark'?'light':'dark';
+      html.setAttribute('data-theme',next);
+      localStorage.setItem('l2p-theme',next);
+      sync(next);
+    });
+    function sync(t){
+      icon.textContent=t==='dark'?'☀️':'🌙';
+      lbl.textContent =t==='dark'?'Light mode':'Dark mode';
+    }
+  })();
+
+  /* ── 2. CLOCK ── */
+  (function(){
+    var dateEl=document.getElementById('clock-date');
+    var timeEl=document.getElementById('clock-time');
+    var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    function tick(){
+      var n=new Date();
+      dateEl.textContent=DAYS[n.getDay()]+', '+MON[n.getMonth()]+' '+n.getDate()+', '+n.getFullYear();
+      timeEl.textContent=pad(n.getHours())+':'+pad(n.getMinutes())+':'+pad(n.getSeconds());
+    }
+    function pad(x){return String(x).padStart(2,'0');}
+    tick(); setInterval(tick,1000);
+  })();
+
+  /* ── 3. WEATHER (Open-Meteo, no key) ── */
+  (function(){
+    var chip=document.getElementById('weather-chip');
+    var iconEl=document.getElementById('weather-icon');
+    var textEl=document.getElementById('weather-text');
+    var WMO={0:{e:'☀️',l:'Clear'},1:{e:'🌤️',l:'Mostly clear'},2:{e:'⛅',l:'Partly cloudy'},
+      3:{e:'☁️',l:'Overcast'},45:{e:'🌫️',l:'Foggy'},48:{e:'🌫️',l:'Icy fog'},
+      51:{e:'🌦️',l:'Light drizzle'},53:{e:'🌦️',l:'Drizzle'},55:{e:'🌧️',l:'Heavy drizzle'},
+      61:{e:'🌧️',l:'Light rain'},63:{e:'🌧️',l:'Rain'},65:{e:'🌧️',l:'Heavy rain'},
+      71:{e:'🌨️',l:'Light snow'},73:{e:'🌨️',l:'Snow'},75:{e:'❄️',l:'Heavy snow'},
+      80:{e:'🌦️',l:'Showers'},81:{e:'🌧️',l:'Heavy showers'},
+      95:{e:'⛈️',l:'Thunderstorm'},99:{e:'⛈️',l:'Heavy thunderstorm'}};
+    function go(lat,lon){
+      fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon
+        +'&current=temperature_2m,weathercode&temperature_unit=celsius&timezone=auto')
+        .then(function(r){return r.json();})
+        .then(function(d){
+          var temp=Math.round(d.current.temperature_2m);
+          var info=WMO[d.current.weathercode]||{e:'🌡️',l:'—'};
+          iconEl.textContent=info.e;
+          textEl.textContent=temp+'°C · '+info.l;
+          chip.style.display='flex';
+        }).catch(function(){});
+    }
+    if(navigator.geolocation)
+      navigator.geolocation.getCurrentPosition(
+        function(p){go(p.coords.latitude,p.coords.longitude);},function(){});
+  })();
+
+  /* ── 4. TODAY'S WORD ── */
+  (function(){
+    var SHEET_ID='1xfo-4X7weCJ93BMvhR1C1qHfjLGqlq46IieSa6u__1w';
+    var GID='2064115865';
+    /* Cols: A=Word B=IPA C=Level D=Meaning_VI E=Synonyms F=Example1 G=Example2 */
+
+    var skeleton=document.getElementById('wordSkeleton');
+    var content =document.getElementById('wordContent');
+    var prevCol =document.getElementById('wordPrev');
+    var prevTerm=document.getElementById('prevTerm');
+    var prevVi  =document.getElementById('prevVi');
+
+    function esc(s){
+      return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    /* Previous word — shown in the "Previously" panel */
+    function loadPrev(){
+      var p=localStorage.getItem('l2p-prev-word');
+      if(!p) return;
+      try{
+        var obj=JSON.parse(p);
+        prevTerm.textContent=obj.word||'';
+        prevVi.textContent  =obj.vi||'';
+        prevCol.style.display='block';
+      }catch(e){}
+    }
+
+    function saveCurrent(obj){
+      localStorage.setItem('l2p-prev-word',JSON.stringify({word:obj.word,vi:obj.vi}));
+    }
+
+    function renderWord(w){
+      skeleton.style.display='none';
+      content.style.display='block';
+
+      /* Build synonyms pills */
+      var synPills='';
+      if(w.synonyms){
+        var syns=w.synonyms.split(/[,;]+/).map(function(s){return s.trim();}).filter(Boolean);
+        synPills=syns.map(function(s){
+          return '<span class="word-syn-pill">'+esc(s)+'</span>';
+        }).join('');
+      }
+
+      /* Build example lines */
+      var exLines='';
+      if(w.ex1) exLines+='<div class="word-ex">"'+esc(w.ex1)+'"</div>';
+      if(w.ex2) exLines+='<div class="word-ex">"'+esc(w.ex2)+'"</div>';
+
+      content.innerHTML=
+        '<div class="word-headline">'+
+          '<span class="word-term">'+esc(w.word)+'</span>'+
+          (w.ipa?'<span class="word-ipa">'+esc(w.ipa)+'</span>':'')+
+          (w.level?'<span class="word-level">'+esc(w.level)+'</span>':'')+
+        '</div>'+
+        (w.vi?'<div class="word-vi">'+esc(w.vi)+'</div>':'')+
+        (synPills?'<div class="word-section-label">Synonyms</div><div class="word-synonyms">'+synPills+'</div>':'')+
+        (exLines?'<div class="word-section-label">Examples</div><div class="word-examples">'+exLines+'</div>':'');
+
+      saveCurrent({word:w.word, vi:w.vi});
+    }
+
+    function renderError(){
+      skeleton.style.display='none';
+      content.style.display='block';
+      content.innerHTML='<div style="color:rgba(255,255,255,0.5);font-size:.85rem">Could not load today\'s word.</div>';
+    }
+
+    /* Show prev immediately while fetching */
+    loadPrev();
+
+    /* Word changes every visit — random pick stored in sessionStorage
+       so refresh in same tab keeps it; new tab = new word.           */
+    var cached=sessionStorage.getItem('l2p-session-word');
+    if(cached){
+      try{ renderWord(JSON.parse(cached)); return; }catch(e){}
+    }
+
+    var url='https://docs.google.com/spreadsheets/d/'+SHEET_ID
+      +'/gviz/tq?tqx=out:json&gid='+GID
+      +'&tq='+encodeURIComponent('SELECT A,B,C,D,E,F,G');
+
+    fetch(url)
+      .then(function(r){return r.text();})
+      .then(function(text){
+        var json=JSON.parse(text.replace(/^[^(]+\(/,'').replace(/\);?\s*$/,''));
+        var rows=json.table.rows;
+        if(!rows||!rows.length){renderError();return;}
+
+        /* Random index */
+        var idx=Math.floor(Math.random()*rows.length);
+        var row=rows[idx];
+        function cell(i){return(row.c[i]&&row.c[i].v!=null)?String(row.c[i].v).trim():'';}
+
+        var w={
+          word:    cell(0),
+          ipa:     cell(1),
+          level:   cell(2),
+          vi:      cell(3),
+          synonyms:cell(4),
+          ex1:     cell(5),
+          ex2:     cell(6)
+        };
+
+        sessionStorage.setItem('l2p-session-word',JSON.stringify(w));
+        renderWord(w);
+      })
+      .catch(function(){renderError();});
+  })();
+  </script>
 
 </body>
 </html>
