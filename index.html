@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Language Hub — Practice All 4 Skills</title>
+
+  <!--
+    Language Hub — Student Landing Page
+    Author: Thanh-Tu / DNU
+    To update app links: find the 4 <a class="skill-card"> elements below
+    and change each href="..." value.
+  -->
+
+  <style>
+    /* =============================================
+       DESIGN TOKENS
+    ============================================= */
+    :root {
+      --bg:           #F7F8FA;
+      --text-head:    #1A1A2E;
+      --text-sub:     #6B7280;
+      --text-card:    #FFFFFF;
+      --shadow:       0 4px 20px rgba(0, 0, 0, 0.08);
+      --shadow-hover: 0 10px 32px rgba(0, 0, 0, 0.16);
+      --radius:       20px;
+      --transition:   0.22s ease;
+
+      /* Per-skill colors */
+      --listening:    #2563EB;  /* blue   */
+      --speaking:     #16A34A;  /* green  */
+      --vocab:        #EA580C;  /* orange */
+      --writing:      #7C3AED;  /* purple */
+    }
+
+    /* =============================================
+       RESET & BASE
+    ============================================= */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                   "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text-head);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* =============================================
+       HEADER
+    ============================================= */
+    header {
+      width: 100%;
+      text-align: center;
+      padding: 56px 24px 32px;
+    }
+
+    /* Four-color accent bar above the title */
+    .header-accent {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    .header-accent span {
+      display: block;
+      width: 28px;
+      height: 5px;
+      border-radius: 99px;
+    }
+
+    .header-accent span:nth-child(1) { background: var(--listening); }
+    .header-accent span:nth-child(2) { background: var(--speaking); }
+    .header-accent span:nth-child(3) { background: var(--vocab); }
+    .header-accent span:nth-child(4) { background: var(--writing); }
+
+    header h1 {
+      font-size: clamp(1.75rem, 5vw, 2.75rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      color: var(--text-head);
+    }
+
+    header p {
+      margin-top: 10px;
+      font-size: 1rem;
+      color: var(--text-sub);
+      font-weight: 400;
+    }
+
+    /* =============================================
+       SKILL GRID — 2x2 on desktop
+    ============================================= */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      padding: 0 24px;
+      width: 100%;
+      max-width: 680px;
+    }
+
+    /* =============================================
+       SKILL CARD
+    ============================================= */
+    .skill-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+
+      aspect-ratio: 1 / 1;
+      padding: 24px;
+
+      border-radius: var(--radius);
+      text-decoration: none;
+      color: var(--text-card);
+      box-shadow: var(--shadow);
+
+      transition: transform var(--transition),
+                  box-shadow var(--transition),
+                  filter var(--transition);
+    }
+
+    /* Per-skill background colors */
+    .skill-card.listening { background: var(--listening); }
+    .skill-card.speaking  { background: var(--speaking); }
+    .skill-card.vocab     { background: var(--vocab); }
+    .skill-card.writing   { background: var(--writing); }
+
+    /* Hover: lift + brighten */
+    .skill-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-hover);
+      filter: brightness(1.08);
+    }
+
+    /* Active: press down */
+    .skill-card:active {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+      filter: brightness(0.96);
+    }
+
+    /* Icon */
+    .skill-icon {
+      font-size: clamp(2.4rem, 8vw, 3.2rem);
+      line-height: 1;
+      display: block;
+    }
+
+    /* Skill name */
+    .skill-name {
+      font-size: clamp(1.1rem, 3.5vw, 1.35rem);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    /* Tag pills — one per feature inside the card */
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 5px;
+      margin-top: 2px;
+    }
+
+    .tag {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      padding: 3px 9px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.22);
+      white-space: nowrap;
+    }
+
+    /* =============================================
+       FOOTER
+    ============================================= */
+    footer {
+      width: 100%;
+      text-align: center;
+      padding: 36px 24px 28px;
+      font-size: 0.8rem;
+      color: var(--text-sub);
+    }
+
+    /* =============================================
+       RESPONSIVE — narrow phones (< 440px)
+       Switch to single column, horizontal card layout
+    ============================================= */
+    @media (max-width: 440px) {
+      .grid {
+        grid-template-columns: 1fr;
+        max-width: 340px;
+      }
+
+      .skill-card {
+        aspect-ratio: auto;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 16px;
+        padding: 18px 22px;
+      }
+
+      .skill-icon { font-size: 2rem; flex-shrink: 0; }
+
+      .skill-name { font-size: 1.1rem; }
+
+      .skill-tags { justify-content: flex-start; }
+    }
+
+    /* =============================================
+       ACCESSIBILITY — reduced motion
+    ============================================= */
+    @media (prefers-reduced-motion: reduce) {
+      .skill-card { transition: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ============ HEADER ============ -->
+  <header>
+    <div class="header-accent" aria-hidden="true">
+      <span></span><span></span><span></span><span></span>
+    </div>
+    <h1>English Skills Hub</h1>
+    <p>Choose a skill to practise</p>
+  </header>
+
+  <!-- ============ SKILL CARDS ============
+       To update a link: change the href="..." on each <a> below.
+  ============================================= -->
+  <main>
+    <div class="grid">
+
+      <!-- LISTENING -->
+      <a class="skill-card listening"
+         href="https://l2practice.github.io/listen-dictation"
+         target="_blank"
+         rel="noopener noreferrer"
+         aria-label="Listening — dictation practice">
+        <span class="skill-icon" aria-hidden="true">🎧</span>
+        <span class="skill-name">Listening</span>
+        <div class="skill-tags">
+          <span class="tag">Dictation</span>
+        </div>
+      </a>
+
+      <!-- SPEAKING -->
+      <a class="skill-card speaking"
+         href="https://l2practice.github.io/fluentalk"
+         target="_blank"
+         rel="noopener noreferrer"
+         aria-label="Speaking — IELTS topics and Just a Minute">
+        <span class="skill-icon" aria-hidden="true">🎤</span>
+        <span class="skill-name">Speaking</span>
+        <div class="skill-tags">
+          <span class="tag">IELTS</span>
+          <span class="tag">JAM</span>
+        </div>
+      </a>
+
+      <!-- VOCABULARY -->
+      <a class="skill-card vocab"
+         href="https://l2practice.github.io/vocab-master"
+         target="_blank"
+         rel="noopener noreferrer"
+         aria-label="Vocabulary — practice and quizzes">
+        <span class="skill-icon" aria-hidden="true">📖</span>
+        <span class="skill-name">Vocabulary</span>
+        <div class="skill-tags">
+          <span class="tag">Practice</span>
+          <span class="tag">Quizzes</span>
+        </div>
+      </a>
+
+      <!-- WRITING -->
+      <a class="skill-card writing"
+         href="https://l2practice.github.io/art-write"
+         target="_blank"
+         rel="noopener noreferrer"
+         aria-label="Writing — AI-assisted writing platform">
+        <span class="skill-icon" aria-hidden="true">✍️</span>
+        <span class="skill-name">Writing</span>
+        <div class="skill-tags">
+          <span class="tag">Practice</span>
+          <span class="tag">AI Support</span>
+        </div>
+      </a>
+
+    </div>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer>
+    <p>© 2026 — For students</p>
+  </footer>
+
+</body>
+</html>
