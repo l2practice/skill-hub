@@ -4,9 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>English Skills Hub</title>
-  <!-- Favicon: runner emoji as inline SVG — no external file needed -->
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%234f46e5'/%3E%3Ctext y='.9em' font-size='72' x='50%25' text-anchor='middle' dominant-baseline='auto'%3E🏃%3C/text%3E%3C/svg%3E" />
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%234f46e5'/%3E%3Ctext y='.9em' font-size='72' x='50%25' text-anchor='middle' dominant-baseline='auto'%3E🏃%3C/text%3E%3C/svg%3E" />
+
+  <!--
+    Favicon: hand-drawn SVG runner — works in all browsers (no emoji rendering needed).
+    Indigo square background, white stick figure mid-stride.
+  -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%234f46e5'/%3E%3C!-- head --%3E%3Ccircle cx='20' cy='6.5' r='2.4' fill='%23fff'/%3E%3C!-- body leaning forward --%3E%3Cline x1='20' y1='8.9' x2='16' y2='17' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3C!-- right arm back --%3E%3Cline x1='19' y1='12' x2='23' y2='15' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3C!-- left arm forward --%3E%3Cline x1='18' y1='11' x2='13' y2='12' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3C!-- right leg back --%3E%3Cline x1='16' y1='17' x2='20' y2='24' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='20' y1='24' x2='23' y2='26' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3C!-- left leg forward --%3E%3Cline x1='16' y1='17' x2='12' y2='22' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='12' y1='22' x2='9' y2='26' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet" />
@@ -86,11 +90,17 @@
       background-image:radial-gradient(ellipse 80% 50% at 50% -10%,var(--bg-glow) 0%,transparent 70%);
     }
 
+    /* ── SINGLE CONTAINER — everything lives here ── */
+    .container {
+      width: 100%;
+      max-width: 900px;
+      padding: 0 24px;
+    }
+
     /* ── TOP BAR ── */
     .top-bar {
-      width:100%; max-width:672px;
       display:flex; align-items:center; justify-content:space-between;
-      padding:20px 0 0;
+      padding-top: 20px;
     }
     .brand {
       font-size:0.7rem; font-weight:600; letter-spacing:0.12em;
@@ -107,10 +117,9 @@
 
     /* ── INFO BAR ── */
     .info-bar {
-      width:100%; max-width:672px;   /* matches grid: 720px - 2×24px padding */
       padding:14px 0 0;
       display:flex; gap:10px; flex-wrap:wrap;
-      justify-content:center;        /* center the chips */
+      justify-content:center;
     }
     .info-chip {
       display:flex; align-items:center; gap:7px;
@@ -124,7 +133,6 @@
 
     /* ── HEADER ── */
     header {
-      width:100%; max-width:672px;
       padding:24px 0 28px; text-align:center;
     }
     header h1 {
@@ -135,7 +143,7 @@
 
     /* ── TODAY'S WORD CARD ── */
     .word-card {
-      width:100%; max-width:672px;   /* same as grid inner width */
+      width:100%;
       margin:0 0 20px;
       background:var(--bg-word);
       border-radius:var(--radius);
@@ -245,8 +253,8 @@
     /* ── SKILL GRID ── */
     .grid {
       display:grid; grid-template-columns:repeat(2,1fr);
-      gap:16px; padding:0 24px;
-      width:100%; max-width:720px;
+      gap:16px; padding:0;
+      width:100%;
     }
 
     /* ── SKILL CARD BASE ── */
@@ -355,13 +363,14 @@
 
     /* ── RESPONSIVE ── */
     @media(max-width:460px){
-      .info-bar{padding:10px 16px 0; gap:8px;}
+      .container { padding:0 16px; }
+      .info-bar{padding:10px 0 0; gap:8px;}
       .info-chip{font-size:0.72rem; padding:5px 11px;}
-      header{padding:18px 24px 22px;}
-      .word-card{width:calc(100% - 32px); margin:0 auto 16px; padding:18px;}
+      header{padding:18px 0 22px;}
+      .word-card{padding:18px;}
       .word-prev-col{display:none !important;}
       .word-term{font-size:1.5rem;}
-      .grid{grid-template-columns:1fr; max-width:400px; padding:0 16px;}
+      .grid{grid-template-columns:1fr;}
       .card{min-height:auto; flex-direction:row; align-items:center; gap:20px; padding:20px 22px;}
       .card::after{top:-20px;right:-20px;width:80px;height:80px;}
       .card-icon{font-size:1.9rem;margin-bottom:0;flex-shrink:0;}
@@ -378,124 +387,122 @@
 <body>
 
   <!-- TOP BAR -->
-  <div class="top-bar">
-    <span class="brand">Second Language Practice</span>
-    <button class="theme-btn" id="themeBtn" aria-label="Toggle theme">
-      <span id="themeIcon">☀️</span>
-      <span id="themeLabel">Light mode</span>
-    </button>
-  </div>
-
-  <!-- INFO BAR -->
-  <div class="info-bar">
-    <div class="info-chip">
-      <span class="chip-icon">📅</span>
-      <span id="clock-date">—</span>
+  <div class="container">
+    <div class="top-bar">
+      <span class="brand">Second Language Practice</span>
+      <button class="theme-btn" id="themeBtn" aria-label="Toggle theme">
+        <span id="themeIcon">☀️</span>
+        <span id="themeLabel">Light mode</span>
+      </button>
     </div>
-    <div class="info-chip">
-      <span class="chip-icon">🕐</span>
-      <span id="clock-time">—</span>
-    </div>
-    <div class="info-chip" id="weather-chip" style="display:none">
-      <span class="chip-icon" id="weather-icon">🌤️</span>
-      <span id="weather-text">—</span>
-    </div>
-  </div>
 
-  <!-- HEADER -->
-  <header>
-    <h1>English Skills Hub</h1>
-    <p>Choose a skill to practise</p>
-  </header>
-
-  <!-- TODAY'S WORD -->
-  <div class="word-card" id="wordCard">
-    <div class="word-eyebrow">Today's Word</div>
-    <div class="word-inner">
-      <!-- Main word content -->
-      <div class="word-main-col">
-        <!-- Skeleton -->
-        <div class="word-skeleton" id="wordSkeleton">
-          <div class="skel" style="height:12px;width:80px"></div>
-          <div class="skel" style="height:36px;width:200px;margin-top:4px"></div>
-          <div class="skel" style="height:13px;width:100%;margin-top:8px"></div>
-          <div class="skel" style="height:13px;width:75%"></div>
-        </div>
-        <!-- Real content -->
-        <div id="wordContent" style="display:none"></div>
+    <!-- INFO BAR -->
+    <div class="info-bar">
+      <div class="info-chip">
+        <span class="chip-icon">📅</span>
+        <span id="clock-date">—</span>
       </div>
-      <!-- Previous word panel -->
-      <div class="word-prev-col" id="wordPrev">
-        <div class="word-prev-label">Previously</div>
-        <div class="word-prev-term" id="prevTerm"></div>
-        <div class="word-prev-vi"   id="prevVi"></div>
+      <div class="info-chip">
+        <span class="chip-icon">🕐</span>
+        <span id="clock-time">—</span>
+      </div>
+      <div class="info-chip" id="weather-chip" style="display:none">
+        <span class="chip-icon" id="weather-icon">🌤️</span>
+        <span id="weather-text">—</span>
       </div>
     </div>
-  </div>
 
-  <!-- SKILL CARDS -->
-  <main>
-    <div class="grid">
+    <!-- HEADER -->
+    <header>
+      <h1>English Skills Hub</h1>
+      <p>Choose a skill to practise</p>
+    </header>
 
-      <a class="card listen"
-         href="https://l2practice.github.io/listen-dictation"
-         target="_blank" rel="noopener noreferrer"
-         aria-label="Listening — dictation practice">
-        <span class="card-icon" aria-hidden="true">🎧</span>
-        <div class="card-body">
-          <div class="card-name">Listening</div>
-          <div class="card-tags"><span class="tag">Dictation</span></div>
-        </div>
-      </a>
-
-      <a class="card speak"
-         href="https://l2practice.github.io/fluentalk"
-         target="_blank" rel="noopener noreferrer"
-         aria-label="Speaking — IELTS and Just a Minute">
-        <span class="card-icon" aria-hidden="true">🎤</span>
-        <div class="card-body">
-          <div class="card-name">Speaking</div>
-          <div class="card-tags">
-            <span class="tag">IELTS Topics</span>
-            <span class="tag">Just a Minute</span>
+    <!-- TODAY'S WORD -->
+    <div class="word-card" id="wordCard">
+      <div class="word-eyebrow">Today's Word</div>
+      <div class="word-inner">
+        <div class="word-main-col">
+          <div class="word-skeleton" id="wordSkeleton">
+            <div class="skel" style="height:12px;width:80px"></div>
+            <div class="skel" style="height:36px;width:200px;margin-top:4px"></div>
+            <div class="skel" style="height:13px;width:100%;margin-top:8px"></div>
+            <div class="skel" style="height:13px;width:75%"></div>
           </div>
+          <div id="wordContent" style="display:none"></div>
         </div>
-      </a>
-
-      <a class="card vocab"
-         href="https://l2practice.github.io/vocab-master"
-         target="_blank" rel="noopener noreferrer"
-         aria-label="Vocabulary — practice and quizzes">
-        <span class="card-icon" aria-hidden="true">📖</span>
-        <div class="card-body">
-          <div class="card-name">Vocabulary</div>
-          <div class="card-tags">
-            <span class="tag">Practice</span>
-            <span class="tag">Quizzes</span>
-          </div>
+        <div class="word-prev-col" id="wordPrev">
+          <div class="word-prev-label">Previously</div>
+          <div class="word-prev-term" id="prevTerm"></div>
+          <div class="word-prev-vi"   id="prevVi"></div>
         </div>
-      </a>
-
-      <a class="card write"
-         href="https://l2practice.github.io/artwrite/login.html"
-         target="_blank" rel="noopener noreferrer"
-         aria-label="Writing — AI-assisted writing platform">
-        <span class="card-icon" aria-hidden="true">✍️</span>
-        <div class="card-body">
-          <div class="card-name">Writing</div>
-          <div class="card-tags">
-            <span class="tag">Practice</span>
-            <span class="tag">AI Support</span>
-          </div>
-        </div>
-      </a>
-
+      </div>
     </div>
-  </main>
 
-  <footer>
-    <p>© 2026 Second Language Practice <span class="dot"></span> For students</p>
-  </footer>
+    <!-- SKILL CARDS -->
+    <main>
+      <div class="grid">
+
+        <a class="card listen"
+           href="https://l2practice.github.io/listen-dictation"
+           target="_blank" rel="noopener noreferrer"
+           aria-label="Listening — dictation practice">
+          <span class="card-icon" aria-hidden="true">🎧</span>
+          <div class="card-body">
+            <div class="card-name">Listening</div>
+            <div class="card-tags"><span class="tag">Dictation</span></div>
+          </div>
+        </a>
+
+        <a class="card speak"
+           href="https://l2practice.github.io/fluentalk"
+           target="_blank" rel="noopener noreferrer"
+           aria-label="Speaking — IELTS and Just a Minute">
+          <span class="card-icon" aria-hidden="true">🎤</span>
+          <div class="card-body">
+            <div class="card-name">Speaking</div>
+            <div class="card-tags">
+              <span class="tag">IELTS Topics</span>
+              <span class="tag">Just a Minute</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card vocab"
+           href="https://l2practice.github.io/vocab-master"
+           target="_blank" rel="noopener noreferrer"
+           aria-label="Vocabulary — practice and quizzes">
+          <span class="card-icon" aria-hidden="true">📖</span>
+          <div class="card-body">
+            <div class="card-name">Vocabulary</div>
+            <div class="card-tags">
+              <span class="tag">Practice</span>
+              <span class="tag">Quizzes</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card write"
+           href="https://l2practice.github.io/artwrite/login.html"
+           target="_blank" rel="noopener noreferrer"
+           aria-label="Writing — AI-assisted writing platform">
+          <span class="card-icon" aria-hidden="true">✍️</span>
+          <div class="card-body">
+            <div class="card-name">Writing</div>
+            <div class="card-tags">
+              <span class="tag">Practice</span>
+              <span class="tag">AI Support</span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+    </main>
+
+    <footer>
+      <p>© 2026 Second Language Practice <span class="dot"></span> For students</p>
+    </footer>
+  </div>
 
   <script>
   /* ── 1. THEME ── */
