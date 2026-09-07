@@ -377,6 +377,178 @@
       .card-body{margin-top:0;}
     }
 
+    /* ── SIGN UP BAR ── */
+    .signup-bar {
+      text-align:center;
+      padding:20px 0 4px;
+      font-size:0.85rem;
+      color:var(--text-sub);
+    }
+    .signup-link {
+      background:none; border:none; cursor:pointer;
+      color:var(--c-write); font-size:0.85rem; font-weight:600;
+      text-decoration:underline; text-underline-offset:3px;
+      padding:0;
+    }
+    .signup-link:hover { opacity:0.8; }
+
+    /* ── MODAL OVERLAY ── */
+    .su-overlay {
+      display:none; position:fixed; inset:0; z-index:9999;
+      background:rgba(0,0,0,0.70);
+      backdrop-filter:blur(6px);
+      align-items:center; justify-content:center;
+      padding:20px;
+    }
+    .su-overlay.open { display:flex; }
+
+    /* ── MODAL BOX ── */
+    .su-modal {
+      background:var(--bg-card);
+      border:1px solid var(--border);
+      border-radius:24px;
+      padding:32px;
+      width:100%; max-width:540px;
+      max-height:90vh; overflow-y:auto;
+      position:relative;
+      box-shadow:0 32px 80px rgba(0,0,0,0.40);
+      /* entry animation */
+      animation:suIn 0.25s ease;
+    }
+    @keyframes suIn {
+      from { opacity:0; transform:translateY(16px) scale(0.98); }
+      to   { opacity:1; transform:translateY(0)    scale(1); }
+    }
+
+    [data-theme="light"] .su-modal {
+      background:#FFFFFF;
+      box-shadow:0 32px 80px rgba(0,0,0,0.16);
+    }
+
+    .su-close {
+      position:absolute; top:16px; right:18px;
+      background:var(--bg-info); border:1px solid var(--border);
+      border-radius:99px; width:30px; height:30px;
+      font-size:0.75rem; color:var(--text-sub); cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      transition:background var(--tr);
+    }
+    .su-close:hover { background:var(--border); color:var(--text-h); }
+
+    .su-title {
+      font-size:1.4rem; font-weight:800; color:var(--text-h);
+      letter-spacing:-0.03em; margin-bottom:6px;
+    }
+    .su-sub { font-size:0.85rem; color:var(--text-sub); line-height:1.5; }
+
+    .su-header { margin-bottom:20px; }
+
+    /* ── FORM ELEMENTS ── */
+    .su-field { display:flex; flex-direction:column; gap:5px; flex:1; }
+    .su-row   { display:flex; gap:12px; margin-bottom:12px; }
+    .su-label {
+      font-size:0.72rem; font-weight:600; letter-spacing:0.04em;
+      text-transform:uppercase; color:var(--text-sub);
+    }
+    .su-req { color:var(--c-vocab); }
+    .su-input {
+      background:var(--bg-info); border:1px solid var(--border);
+      border-radius:10px; padding:10px 13px;
+      font-size:0.88rem; color:var(--text-h);
+      font-family:inherit; width:100%;
+      transition:border-color var(--tr);
+      outline:none;
+    }
+    .su-input:focus { border-color:var(--c-write); }
+    .su-input::placeholder { color:var(--text-muted); }
+    [data-theme="light"] .su-input { background:#F8F9FF; }
+
+    .su-field { margin-bottom:12px; }
+
+    .su-hint {
+      font-size:0.72rem; color:var(--text-muted); margin-top:4px; line-height:1.4;
+    }
+
+    /* Code verify row */
+    .su-code-row { display:flex; gap:8px; }
+    .su-code-row .su-input { flex:1; }
+    .su-verify-btn {
+      background:var(--c-write); color:#fff;
+      border:none; border-radius:10px; padding:0 18px;
+      font-size:0.82rem; font-weight:700; cursor:pointer;
+      white-space:nowrap; transition:opacity var(--tr);
+      font-family:inherit;
+    }
+    .su-verify-btn:hover { opacity:0.85; }
+    .su-verify-btn:disabled { opacity:0.5; cursor:not-allowed; }
+
+    /* Class badge after verify */
+    .su-class-badge {
+      margin-top:8px; padding:8px 14px;
+      background:rgba(34,197,94,0.12);
+      border:1px solid rgba(34,197,94,0.30);
+      border-radius:10px;
+      font-size:0.82rem; font-weight:600; color:#22C55E;
+    }
+
+    .su-divider {
+      height:1px; background:var(--border);
+      margin:4px 0 18px;
+    }
+
+    /* App pills row */
+    .su-apps-note {
+      display:flex; flex-wrap:wrap; gap:6px;
+      margin:16px 0 20px;
+    }
+    .su-app-pill {
+      font-size:0.72rem; font-weight:600;
+      padding:4px 12px; border-radius:99px;
+      border:1px solid var(--border);
+      color:#fff;
+    }
+    .listen-pill { background:var(--c-listen); }
+    .speak-pill  { background:var(--c-speak); }
+    .vocab-pill  { background:var(--c-vocab); }
+    .write-pill  { background:var(--c-write); }
+
+    /* Submit button */
+    .su-submit {
+      width:100%; padding:13px;
+      background:linear-gradient(135deg, var(--c-write), #6d28d9);
+      color:#fff; border:none; border-radius:12px;
+      font-size:0.92rem; font-weight:700; cursor:pointer;
+      font-family:inherit;
+      transition:opacity var(--tr), transform var(--tr);
+    }
+    .su-submit:hover:not(:disabled) { opacity:0.9; transform:translateY(-1px); }
+    .su-submit:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+    /* Toast */
+    .su-toast {
+      margin-top:12px; font-size:0.82rem; font-weight:500;
+      text-align:center; min-height:20px; line-height:1.5;
+    }
+    .su-toast.ok  { color:#22C55E; }
+    .su-toast.err { color:#F87171; }
+
+    /* Spinner */
+    .su-spin {
+      display:inline-block; width:14px; height:14px;
+      border:2px solid rgba(255,255,255,0.3);
+      border-top-color:#fff; border-radius:50%;
+      animation:spin 0.7s linear infinite;
+      vertical-align:middle;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    @media(max-width:460px) {
+      .su-modal { padding:24px 18px; }
+      .su-row { flex-direction:column; gap:0; }
+    }
+
+    /* ───────────────────────────────────── */
+
     @media(prefers-reduced-motion:reduce){
       .card{animation:none;opacity:1;transform:none;transition:none;}
       .skel{animation:none;opacity:0.4;}
@@ -499,9 +671,93 @@
       </div>
     </main>
 
+    <div class="signup-bar">
+      <p>New student? <button class="signup-link" id="openSignup">Create an account</button> to access all 4 apps with one code.</p>
+    </div>
+
     <footer>
       <p>© 2026 Second Language Practice <span class="dot"></span> For students</p>
     </footer>
+  </div>
+
+  <!-- ── SIGN UP MODAL ── -->
+  <div class="su-overlay" id="suOverlay">
+    <div class="su-modal">
+      <button class="su-close" id="suClose" aria-label="Close">✕</button>
+
+      <div class="su-header">
+        <div class="su-title">Create Account</div>
+        <p class="su-sub">Enter your class code to register for all 4 apps at once.</p>
+      </div>
+
+      <!-- Step 1: enter speaking code → verify class -->
+      <div id="suStep1">
+        <div class="su-field">
+          <label class="su-label">Class Code <span class="su-req">*</span></label>
+          <div class="su-code-row">
+            <input class="su-input" id="suCode" placeholder="e.g. NAJ492" maxlength="20"
+                   style="text-transform:uppercase;font-family:monospace;letter-spacing:0.08em">
+            <button class="su-verify-btn" id="suVerify">Verify</button>
+          </div>
+          <div class="su-hint">Your teacher provides this code. One code unlocks all 4 apps.</div>
+          <div class="su-class-badge" id="suClassBadge" style="display:none"></div>
+        </div>
+      </div>
+
+      <!-- Step 2: fill in details (shown after code verified) -->
+      <div id="suStep2" style="display:none">
+        <div class="su-divider"></div>
+
+        <div class="su-row">
+          <div class="su-field">
+            <label class="su-label">Full Name <span class="su-req">*</span></label>
+            <input class="su-input" id="suName" placeholder="Nguyen Van A" autocomplete="name">
+          </div>
+          <div class="su-field">
+            <label class="su-label">Student ID <span class="su-req">*</span></label>
+            <input class="su-input" id="suId" placeholder="1234567" autocomplete="username">
+          </div>
+        </div>
+
+        <div class="su-row">
+          <div class="su-field">
+            <label class="su-label">Date of Birth</label>
+            <input class="su-input" id="suDob" type="date">
+          </div>
+          <div class="su-field">
+            <label class="su-label">Phone</label>
+            <input class="su-input" id="suPhone" type="tel" placeholder="09xx xxx xxx" autocomplete="tel">
+          </div>
+        </div>
+
+        <div class="su-field">
+          <label class="su-label">Email</label>
+          <input class="su-input" id="suEmail" type="email" placeholder="you@email.com" autocomplete="email">
+        </div>
+
+        <div class="su-row">
+          <div class="su-field">
+            <label class="su-label">Password <span class="su-req">*</span></label>
+            <input class="su-input" id="suPw" type="password" placeholder="••••••••" autocomplete="new-password">
+          </div>
+          <div class="su-field">
+            <label class="su-label">Confirm Password <span class="su-req">*</span></label>
+            <input class="su-input" id="suPw2" type="password" placeholder="••••••••">
+          </div>
+        </div>
+
+        <div class="su-apps-note">
+          <span class="su-app-pill listen-pill">🎧 Listening</span>
+          <span class="su-app-pill speak-pill">🎤 Speaking</span>
+          <span class="su-app-pill vocab-pill">📖 Vocabulary</span>
+          <span class="su-app-pill write-pill">✍️ Writing</span>
+        </div>
+
+        <button class="su-submit" id="suSubmit">Create Account for All 4 Apps</button>
+        <div class="su-toast" id="suToast"></div>
+      </div>
+
+    </div>
   </div>
 
   <script>
@@ -680,6 +936,157 @@
         renderWord(w);
       })
       .catch(function(){renderError();});
+  })();
+  /* ── 5. SIGN UP MODAL ── */
+  (function(){
+    /*
+     * HUB_API: URL của GAS middleware sau khi bạn deploy.
+     * Thay chuỗi dưới bằng Web App URL thật sau khi deploy GAS.
+     */
+    var HUB_API = 'https://script.google.com/macros/s/AKfycbxYwKjujzkkhC7NUWoPp7npWyY3lCp2matdsOJQck0clj-DlcvAObVmCyyAgFTyarr2mQ/exec';
+
+    var overlay  = document.getElementById('suOverlay');
+    var btnOpen  = document.getElementById('openSignup');
+    var btnClose = document.getElementById('suClose');
+    var step1    = document.getElementById('suStep1');
+    var step2    = document.getElementById('suStep2');
+    var badge    = document.getElementById('suClassBadge');
+    var toast    = document.getElementById('suToast');
+    var verifyBtn= document.getElementById('suVerify');
+    var submitBtn= document.getElementById('suSubmit');
+
+    var verifiedCode = null; // set after successful code lookup
+
+    // Open / close
+    btnOpen.onclick  = function(){ overlay.classList.add('open'); };
+    btnClose.onclick = closeModal;
+    overlay.onclick  = function(e){ if(e.target===overlay) closeModal(); };
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeModal(); });
+
+    function closeModal(){
+      overlay.classList.remove('open');
+      resetModal();
+    }
+
+    function resetModal(){
+      verifiedCode = null;
+      step2.style.display = 'none';
+      badge.style.display = 'none';
+      badge.textContent   = '';
+      document.getElementById('suCode').value = '';
+      ['suName','suId','suDob','suPhone','suEmail','suPw','suPw2']
+        .forEach(function(id){ document.getElementById(id).value=''; });
+      showToast('','');
+      verifyBtn.disabled = false;
+      verifyBtn.textContent = 'Verify';
+    }
+
+    // ── Verify code ──────────────────────────────────────────────
+    verifyBtn.onclick = function(){
+      var code = document.getElementById('suCode').value.trim().toUpperCase();
+      if(!code){ showToast('Please enter your class code.','err'); return; }
+
+      verifyBtn.disabled = true;
+      verifyBtn.innerHTML = '<span class="su-spin"></span>';
+      showToast('','');
+
+      fetch(HUB_API, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'lookupCode', speakingCode: code })
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(res){
+        verifyBtn.disabled = false;
+        verifyBtn.textContent = 'Verify';
+        if(res.success){
+          verifiedCode = code;
+          badge.textContent = '✓ Class found: ' + res.className;
+          badge.style.display = 'block';
+          step2.style.display = 'block';
+          showToast('','');
+          document.getElementById('suName').focus();
+        } else {
+          showToast(res.error || 'Code not found.','err');
+          badge.style.display='none';
+          step2.style.display='none';
+          verifiedCode=null;
+        }
+      })
+      .catch(function(){
+        verifyBtn.disabled=false;
+        verifyBtn.textContent='Verify';
+        showToast('Could not reach server. Please try again.','err');
+      });
+    };
+
+    // Allow pressing Enter in code field to trigger verify
+    document.getElementById('suCode').addEventListener('keydown',function(e){
+      if(e.key==='Enter'){ e.preventDefault(); verifyBtn.click(); }
+    });
+
+    // ── Submit registration ───────────────────────────────────────
+    submitBtn.onclick = function(){
+      if(!verifiedCode){ showToast('Please verify your class code first.','err'); return; }
+
+      var name  = document.getElementById('suName').value.trim();
+      var sid   = document.getElementById('suId').value.trim();
+      var pw    = document.getElementById('suPw').value;
+      var pw2   = document.getElementById('suPw2').value;
+      var email = document.getElementById('suEmail').value.trim();
+      var phone = document.getElementById('suPhone').value.trim();
+      var dob   = document.getElementById('suDob').value;
+
+      if(!name)  { showToast('Please enter your full name.','err'); return; }
+      if(!sid)   { showToast('Please enter your student ID.','err'); return; }
+      if(!pw)    { showToast('Please enter a password.','err'); return; }
+      if(pw!==pw2){ showToast('Passwords do not match.','err'); return; }
+      if(pw.length<6){ showToast('Password must be at least 6 characters.','err'); return; }
+
+      submitBtn.disabled=true;
+      submitBtn.innerHTML='<span class="su-spin"></span> Creating accounts…';
+      showToast('','');
+
+      fetch(HUB_API, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          action       : 'register',
+          speakingCode : verifiedCode,
+          studentId    : sid,
+          fullName     : name,
+          password     : pw,
+          email        : email,
+          phone        : phone,
+          dob          : dob
+        })
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(res){
+        submitBtn.disabled=false;
+        submitBtn.textContent='Create Account for All 4 Apps';
+        if(res.success){
+          var msg = res.partial
+            ? '⚠️ ' + res.message
+            : '✓ Account created! You can now log in to all 4 apps with your Student ID and password.';
+          showToast(msg, res.partial ? 'err' : 'ok');
+          // Auto-close after 4s on full success
+          if(!res.partial) setTimeout(closeModal, 4000);
+        } else {
+          showToast('✗ ' + (res.error||'Registration failed. Please try again.'),'err');
+        }
+      })
+      .catch(function(){
+        submitBtn.disabled=false;
+        submitBtn.textContent='Create Account for All 4 Apps';
+        showToast('Could not reach server. Please check your connection.','err');
+      });
+    };
+
+    function showToast(msg, type){
+      toast.textContent = msg;
+      toast.className   = 'su-toast' + (type ? ' '+type : '');
+    }
   })();
   </script>
 
