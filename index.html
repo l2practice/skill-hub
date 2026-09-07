@@ -939,29 +939,23 @@
   })();
   /* ── 5. SIGN UP MODAL ── */
   (function(){
-    /*
-     * HUB_API: URL của GAS middleware sau khi bạn deploy.
-     * Thay chuỗi dưới bằng Web App URL thật sau khi deploy GAS.
-     */
     var HUB_API = 'https://script.google.com/macros/s/AKfycbxYwKjujzkkhC7NUWoPp7npWyY3lCp2matdsOJQck0clj-DlcvAObVmCyyAgFTyarr2mQ/exec';
 
     var overlay  = document.getElementById('suOverlay');
     var btnOpen  = document.getElementById('openSignup');
     var btnClose = document.getElementById('suClose');
-    var step1    = document.getElementById('suStep1');
     var step2    = document.getElementById('suStep2');
     var badge    = document.getElementById('suClassBadge');
     var toast    = document.getElementById('suToast');
     var verifyBtn= document.getElementById('suVerify');
     var submitBtn= document.getElementById('suSubmit');
 
-    var verifiedCode = null; // set after successful code lookup
+    var verifiedCode = null;
 
-    // Open / close
     btnOpen.onclick  = function(){ overlay.classList.add('open'); };
     btnClose.onclick = closeModal;
     overlay.onclick  = function(e){ if(e.target===overlay) closeModal(); };
-    document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeModal(); });
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeModal(); });
 
     function closeModal(){
       overlay.classList.remove('open');
@@ -979,9 +973,20 @@
       showToast('','');
       verifyBtn.disabled = false;
       verifyBtn.textContent = 'Verify';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Create Account for All 4 Apps';
     }
 
-    // ── Verify code ──────────────────────────────────────────────
+    /* GAS GET helper — avoids CORS preflight entirely */
+    function gasGet(params) {
+      var qs = Object.keys(params).map(function(k){
+        return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
+      }).join('&');
+      return fetch(HUB_API + '?' + qs, { method:'GET' })
+        .then(function(r){ return r.json(); });
+    }
+
+    /* ── Verify code ── */
     verifyBtn.onclick = function(){
       var code = document.getElementById('suCode').value.trim().toUpperCase();
       if(!code){ showToast('Please enter your class code.','err'); return; }
@@ -990,42 +995,36 @@
       verifyBtn.innerHTML = '<span class="su-spin"></span>';
       showToast('','');
 
-      fetch(HUB_API, {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ action:'lookupCode', speakingCode: code })
-      })
-      .then(function(r){ return r.json(); })
-      .then(function(res){
-        verifyBtn.disabled = false;
-        verifyBtn.textContent = 'Verify';
-        if(res.success){
-          verifiedCode = code;
-          badge.textContent = '✓ Class found: ' + res.className;
-          badge.style.display = 'block';
-          step2.style.display = 'block';
-          showToast('','');
-          document.getElementById('suName').focus();
-        } else {
-          showToast(res.error || 'Code not found.','err');
-          badge.style.display='none';
-          step2.style.display='none';
-          verifiedCode=null;
-        }
-      })
-      .catch(function(){
-        verifyBtn.disabled=false;
-        verifyBtn.textContent='Verify';
-        showToast('Could not reach server. Please try again.','err');
-      });
+      gasGet({ action:'lookupCode', speakingCode: code })
+        .then(function(res){
+          verifyBtn.disabled = false;
+          verifyBtn.textContent = 'Verify';
+          if(res.success){
+            verifiedCode = code;
+            badge.textContent   = '✓ Class found: ' + res.className;
+            badge.style.display = 'block';
+            step2.style.display = 'block';
+            showToast('','');
+            document.getElementById('suName').focus();
+          } else {
+            showToast(res.error || 'Code not found.','err');
+            badge.style.display = 'none';
+            step2.style.display = 'none';
+            verifiedCode = null;
+          }
+        })
+        .catch(function(){
+          verifyBtn.disabled = false;
+          verifyBtn.textContent = 'Verify';
+          showToast('Could not reach server. Please try again.','err');
+        });
     };
 
-    // Allow pressing Enter in code field to trigger verify
     document.getElementById('suCode').addEventListener('keydown',function(e){
       if(e.key==='Enter'){ e.preventDefault(); verifyBtn.click(); }
     });
 
-    // ── Submit registration ───────────────────────────────────────
+    /* ── Submit registration ── */
     submitBtn.onclick = function(){
       if(!verifiedCode){ showToast('Please verify your class code first.','err'); return; }
 
@@ -1037,50 +1036,46 @@
       var phone = document.getElementById('suPhone').value.trim();
       var dob   = document.getElementById('suDob').value;
 
-      if(!name)  { showToast('Please enter your full name.','err'); return; }
-      if(!sid)   { showToast('Please enter your student ID.','err'); return; }
-      if(!pw)    { showToast('Please enter a password.','err'); return; }
-      if(pw!==pw2){ showToast('Passwords do not match.','err'); return; }
+      if(!name)    { showToast('Please enter your full name.','err'); return; }
+      if(!sid)     { showToast('Please enter your student ID.','err'); return; }
+      if(!pw)      { showToast('Please enter a password.','err'); return; }
+      if(pw!==pw2) { showToast('Passwords do not match.','err'); return; }
       if(pw.length<6){ showToast('Password must be at least 6 characters.','err'); return; }
 
-      submitBtn.disabled=true;
-      submitBtn.innerHTML='<span class="su-spin"></span> Creating accounts…';
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="su-spin"></span> Creating accounts…';
       showToast('','');
 
-      fetch(HUB_API, {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({
-          action       : 'register',
-          speakingCode : verifiedCode,
-          studentId    : sid,
-          fullName     : name,
-          password     : pw,
-          email        : email,
-          phone        : phone,
-          dob          : dob
-        })
-      })
-      .then(function(r){ return r.json(); })
-      .then(function(res){
-        submitBtn.disabled=false;
-        submitBtn.textContent='Create Account for All 4 Apps';
-        if(res.success){
-          var msg = res.partial
-            ? '⚠️ ' + res.message
-            : '✓ Account created! You can now log in to all 4 apps with your Student ID and password.';
-          showToast(msg, res.partial ? 'err' : 'ok');
-          // Auto-close after 4s on full success
-          if(!res.partial) setTimeout(closeModal, 4000);
-        } else {
-          showToast('✗ ' + (res.error||'Registration failed. Please try again.'),'err');
-        }
-      })
-      .catch(function(){
-        submitBtn.disabled=false;
-        submitBtn.textContent='Create Account for All 4 Apps';
-        showToast('Could not reach server. Please check your connection.','err');
+      /* Encode payload as JSON string in query param */
+      var payload = JSON.stringify({
+        speakingCode : verifiedCode,
+        studentId    : sid,
+        fullName     : name,
+        password     : pw,
+        email        : email,
+        phone        : phone,
+        dob          : dob
       });
+
+      gasGet({ action:'register', data: payload })
+        .then(function(res){
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Create Account for All 4 Apps';
+          if(res.success){
+            var msg = res.partial
+              ? '⚠️ ' + res.message
+              : '✓ Account created! Log in to each app with your Student ID and password.';
+            showToast(msg, res.partial ? 'err' : 'ok');
+            if(!res.partial) setTimeout(closeModal, 4000);
+          } else {
+            showToast('✗ ' + (res.error || 'Registration failed.'),'err');
+          }
+        })
+        .catch(function(){
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Create Account for All 4 Apps';
+          showToast('Could not reach server. Please check your connection.','err');
+        });
     };
 
     function showToast(msg, type){
