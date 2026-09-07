@@ -939,7 +939,7 @@
   })();
   /* ── 5. SIGN UP MODAL ── */
   (function(){
-    var HUB_API = 'https://script.google.com/macros/s/AKfycbxqeLgT9oy1YQtZUw6KAYnnZSaOjJzV5PlrCmSJLwgKM1aHvivAxkuSLqYAhmZHXn9ZNQ/exec';
+    var HUB_API = 'https://script.google.com/macros/s/AKfycbxGej02r8cChaxHCzSW5e0hYri_-V7AHFclgB9t6mYvtFXTVFglsw9SmNTgWxAHUPQx5Q/exec';
 
     var overlay  = document.getElementById('suOverlay');
     var btnOpen  = document.getElementById('openSignup');
@@ -1046,36 +1046,52 @@
       submitBtn.innerHTML = '<span class="su-spin"></span> Creating accounts…';
       showToast('','');
 
-      /* Encode payload as JSON string in query param */
-      var payload = JSON.stringify({
-        speakingCode : verifiedCode,
-        studentId    : sid,
-        fullName     : name,
-        password     : pw,
-        email        : email,
-        phone        : phone,
-        dob          : dob
-      });
-
-      gasGet({ action:'register', data: payload })
-        .then(function(res){
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Create Account for All 4 Apps';
-          if(res.success){
-            var msg = res.partial
-              ? '⚠️ ' + res.message
-              : '✓ Account created! Log in to each app with your Student ID and password.';
-            showToast(msg, res.partial ? 'err' : 'ok');
-            if(!res.partial) setTimeout(closeModal, 4000);
-          } else {
-            showToast('✗ ' + (res.error || 'Registration failed.'),'err');
-          }
-        })
-        .catch(function(){
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Create Account for All 4 Apps';
-          showToast('Could not reach server. Please check your connection.','err');
+      /* Check duplicate email first (if provided), then register */
+      function doRegister() {
+        var payload = JSON.stringify({
+          speakingCode : verifiedCode,
+          studentId    : sid,
+          fullName     : name,
+          password     : pw,
+          email        : email,
+          phone        : phone,
+          dob          : dob
         });
+
+        gasGet({ action:'register', data: payload })
+          .then(function(res){
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Create Account for All 4 Apps';
+            if(res.success){
+              var msg = '✓ ' + res.message;
+              showToast(msg, 'ok');
+              if(!res.partial) setTimeout(closeModal, 4000);
+            } else {
+              showToast('✗ ' + (res.error || 'Registration failed.'),'err');
+            }
+          })
+          .catch(function(){
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Create Account for All 4 Apps';
+            showToast('Could not reach server. Please check your connection.','err');
+          });
+      }
+
+      if(email) {
+        gasGet({ action:'checkEmail', email: email })
+          .then(function(res){
+            if(!res.success){
+              submitBtn.disabled = false;
+              submitBtn.textContent = 'Create Account for All 4 Apps';
+              showToast('✗ ' + res.error, 'err');
+            } else {
+              doRegister();
+            }
+          })
+          .catch(function(){ doRegister(); }); // if check fails, proceed anyway
+      } else {
+        doRegister();
+      }
     };
 
     function showToast(msg, type){
