@@ -532,8 +532,14 @@
     .su-toast.ok  { color:#22C55E; }
     .su-toast.err { color:#F87171; }
 
-    /* Spinner */
-    .su-spin {
+    .su-email-status {
+      font-size:0.72rem; font-weight:500;
+      margin-top:4px; min-height:16px;
+      transition:color var(--tr);
+    }
+    .su-email-status.ok  { color:#22C55E; }
+    .su-email-status.err { color:#F87171; }
+    .su-email-status.checking { color:var(--text-muted); }
       display:inline-block; width:14px; height:14px;
       border:2px solid rgba(255,255,255,0.3);
       border-top-color:#fff; border-radius:50%;
@@ -711,38 +717,39 @@
         <div class="su-row">
           <div class="su-field">
             <label class="su-label">Full Name <span class="su-req">*</span></label>
-            <input class="su-input" id="suName" placeholder="Nguyen Van A" autocomplete="name">
+            <input class="su-input" id="suName" placeholder="Nguyen Van A" autocomplete="name" required>
           </div>
           <div class="su-field">
             <label class="su-label">Student ID <span class="su-req">*</span></label>
-            <input class="su-input" id="suId" placeholder="1234567" autocomplete="username">
+            <input class="su-input" id="suId" placeholder="1234567" autocomplete="username" required>
           </div>
         </div>
 
         <div class="su-row">
           <div class="su-field">
-            <label class="su-label">Date of Birth</label>
-            <input class="su-input" id="suDob" type="date">
+            <label class="su-label">Date of Birth <span class="su-req">*</span></label>
+            <input class="su-input" id="suDob" type="date" required>
           </div>
           <div class="su-field">
-            <label class="su-label">Phone</label>
-            <input class="su-input" id="suPhone" type="tel" placeholder="09xx xxx xxx" autocomplete="tel">
+            <label class="su-label">Phone <span class="su-req">*</span></label>
+            <input class="su-input" id="suPhone" type="tel" placeholder="09xx xxx xxx" autocomplete="tel" required>
           </div>
         </div>
 
         <div class="su-field">
-          <label class="su-label">Email</label>
-          <input class="su-input" id="suEmail" type="email" placeholder="you@email.com" autocomplete="email">
+          <label class="su-label">Email <span class="su-req">*</span></label>
+          <input class="su-input" id="suEmail" type="email" placeholder="you@email.com" autocomplete="email" required>
+          <div class="su-email-status" id="suEmailStatus"></div>
         </div>
 
         <div class="su-row">
           <div class="su-field">
             <label class="su-label">Password <span class="su-req">*</span></label>
-            <input class="su-input" id="suPw" type="password" placeholder="••••••••" autocomplete="new-password">
+            <input class="su-input" id="suPw" type="password" placeholder="Min. 6 characters" autocomplete="new-password" required>
           </div>
           <div class="su-field">
             <label class="su-label">Confirm Password <span class="su-req">*</span></label>
-            <input class="su-input" id="suPw2" type="password" placeholder="••••••••">
+            <input class="su-input" id="suPw2" type="password" placeholder="••••••••" required>
           </div>
         </div>
 
@@ -964,12 +971,15 @@
 
     function resetModal(){
       verifiedCode = null;
+      emailOk = false;
       step2.style.display = 'none';
       badge.style.display = 'none';
       badge.textContent   = '';
       document.getElementById('suCode').value = '';
       ['suName','suId','suDob','suPhone','suEmail','suPw','suPw2']
         .forEach(function(id){ document.getElementById(id).value=''; });
+      var es = document.getElementById('suEmailStatus');
+      if(es){ es.textContent=''; es.className='su-email-status'; }
       showToast('','');
       verifyBtn.disabled = false;
       verifyBtn.textContent = 'Verify';
@@ -1036,63 +1046,89 @@
       var phone = document.getElementById('suPhone').value.trim();
       var dob   = document.getElementById('suDob').value;
 
-      if(!name)    { showToast('Please enter your full name.','err'); return; }
-      if(!sid)     { showToast('Please enter your student ID.','err'); return; }
-      if(!pw)      { showToast('Please enter a password.','err'); return; }
-      if(pw!==pw2) { showToast('Passwords do not match.','err'); return; }
-      if(pw.length<6){ showToast('Password must be at least 6 characters.','err'); return; }
+      // All fields required
+      if(!name)  { showToast('⚠ Please enter your full name.','err');    document.getElementById('suName').focus();  return; }
+      if(!sid)   { showToast('⚠ Please enter your student ID.','err');   document.getElementById('suId').focus();    return; }
+      if(!dob)   { showToast('⚠ Please enter your date of birth.','err');document.getElementById('suDob').focus();   return; }
+      if(!phone) { showToast('⚠ Please enter your phone number.','err'); document.getElementById('suPhone').focus(); return; }
+      if(!email) { showToast('⚠ Please enter your email.','err');        document.getElementById('suEmail').focus(); return; }
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showToast('⚠ Invalid email format.','err'); document.getElementById('suEmail').focus(); return; }
+      if(!emailOk){ showToast('⚠ Please wait for email check or use a different email.','err'); document.getElementById('suEmail').focus(); return; }
+      if(!pw)    { showToast('⚠ Please enter a password.','err');        document.getElementById('suPw').focus();   return; }
+      if(pw.length<6){ showToast('⚠ Password must be at least 6 characters.','err'); document.getElementById('suPw').focus(); return; }
+      if(pw!==pw2){ showToast('⚠ Passwords do not match.','err');        document.getElementById('suPw2').focus();  return; }
 
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<span class="su-spin"></span> Creating accounts…';
       showToast('','');
 
-      /* Check duplicate email first (if provided), then register */
-      function doRegister() {
-        var payload = JSON.stringify({
-          speakingCode : verifiedCode,
-          studentId    : sid,
-          fullName     : name,
-          password     : pw,
-          email        : email,
-          phone        : phone,
-          dob          : dob
-        });
+      var payload = JSON.stringify({
+        speakingCode : verifiedCode,
+        studentId    : sid,
+        fullName     : name,
+        password     : pw,
+        email        : email,
+        phone        : phone,
+        dob          : dob
+      });
 
-        gasGet({ action:'register', data: payload })
+      gasGet({ action:'register', data: payload })
+        .then(function(res){
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Create Account for All 4 Apps';
+          if(res.success){
+            showToast('✓ ' + res.message, 'ok');
+            setTimeout(closeModal, 4000);
+          } else {
+            showToast('✗ ' + (res.error || 'Registration failed.'),'err');
+          }
+        })
+        .catch(function(){
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Create Account for All 4 Apps';
+          showToast('Could not reach server. Please check your connection.','err');
+        });
+    };
+
+    var emailOk = false;
+    var emailTimer = null;
+    document.getElementById('suEmail').addEventListener('input', function(){
+      var emailStatus = document.getElementById('suEmailStatus');
+      var email = this.value.trim();
+      emailOk = false;
+
+      if(!email){ emailStatus.textContent=''; emailStatus.className='su-email-status'; return; }
+
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+        emailStatus.textContent='Invalid email format.';
+        emailStatus.className='su-email-status err';
+        return;
+      }
+
+      clearTimeout(emailTimer);
+      emailStatus.textContent='Checking…';
+      emailStatus.className='su-email-status checking';
+
+      emailTimer = setTimeout(function(){
+        gasGet({ action:'checkEmail', email: email })
           .then(function(res){
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Create Account for All 4 Apps';
             if(res.success){
-              var msg = '✓ ' + res.message;
-              showToast(msg, 'ok');
-              if(!res.partial) setTimeout(closeModal, 4000);
+              emailStatus.textContent='✓ Email available.';
+              emailStatus.className='su-email-status ok';
+              emailOk = true;
             } else {
-              showToast('✗ ' + (res.error || 'Registration failed.'),'err');
+              emailStatus.textContent='✗ ' + (res.error || 'Email already registered.');
+              emailStatus.className='su-email-status err';
+              emailOk = false;
             }
           })
           .catch(function(){
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Create Account for All 4 Apps';
-            showToast('Could not reach server. Please check your connection.','err');
+            emailStatus.textContent='';
+            emailStatus.className='su-email-status';
+            emailOk = true;
           });
-      }
-
-      if(email) {
-        gasGet({ action:'checkEmail', email: email })
-          .then(function(res){
-            if(!res.success){
-              submitBtn.disabled = false;
-              submitBtn.textContent = 'Create Account for All 4 Apps';
-              showToast('✗ ' + res.error, 'err');
-            } else {
-              doRegister();
-            }
-          })
-          .catch(function(){ doRegister(); }); // if check fails, proceed anyway
-      } else {
-        doRegister();
-      }
-    };
+      }, 600);
+    });
 
     function showToast(msg, type){
       toast.textContent = msg;
