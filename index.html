@@ -45,14 +45,16 @@
       --text-tag:     rgba(255,255,255,0.75);
       --text-body:    rgba(255,255,255,0.85);
       --text-muted:   rgba(255,255,255,0.40);
-      --c-listen:     #3B82F6;
-      --c-speak:      #22C55E;
-      --c-vocab:      #F97316;
-      --c-write:      #A855F7;
-      --g-listen:     rgba(59,130,246,0.30);
-      --g-speak:      rgba(34,197,94,0.30);
-      --g-vocab:      rgba(249,115,22,0.30);
-      --g-write:      rgba(168,85,247,0.30);
+      --c-listen:     #89C4C4;   /* teal/cyan nhạt */
+      --c-speak:      #98D4A8;   /* mint xanh lá nhạt */
+      --c-vocab:      #C5B3E6;   /* lavender tím nhạt */
+      --c-write:      #F2C4A0;   /* peach cam nhạt */
+      --c-classhub:   #8BAEE8;   /* periwinkle xanh dương nhạt */
+      --g-listen:     rgba(137,196,196,0.35);
+      --g-speak:      rgba(152,212,168,0.35);
+      --g-vocab:      rgba(197,179,230,0.35);
+      --g-write:      rgba(242,196,160,0.35);
+      --g-classhub:   rgba(139,174,232,0.35);
       --radius:       22px;
       --tr:           0.22s ease;
     }
@@ -71,10 +73,11 @@
       --text-tag:     #374151;
       --text-body:    #374151;
       --text-muted:   #9CA3AF;
-      --g-listen:     rgba(59,130,246,0.08);
-      --g-speak:      rgba(34,197,94,0.08);
-      --g-vocab:      rgba(249,115,22,0.08);
-      --g-write:      rgba(168,85,247,0.08);
+      --g-listen:     rgba(137,196,196,0.15);
+      --g-speak:      rgba(152,212,168,0.15);
+      --g-vocab:      rgba(197,179,230,0.15);
+      --g-write:      rgba(242,196,160,0.15);
+      --g-classhub:   rgba(139,174,232,0.15);
     }
 
     /* ── RESET ── */
@@ -250,12 +253,26 @@
     }
     @keyframes shimmer { 0%,100%{opacity:0.3} 50%{opacity:0.7} }
 
-    /* ── SKILL GRID ── */
+    /* ── SKILL GRID — 1 wide + 2x2 ── */
     .grid {
-      display:grid; grid-template-columns:repeat(2,1fr);
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      grid-template-rows:auto auto;
       gap:16px; padding:0;
       width:100%;
     }
+
+    /* Class-hub spans full width */
+    .card.classhub {
+      grid-column: 1 / -1;
+      flex-direction:row;
+      align-items:center;
+      gap:24px;
+      min-height:auto;
+      padding:24px 32px;
+    }
+
+    .card.classhub .card-body { margin-top:0; }
 
     /* ── SKILL CARD BASE ── */
     .card {
@@ -275,6 +292,7 @@
     .card:nth-child(2){animation-delay:0.12s}
     .card:nth-child(3){animation-delay:0.19s}
     .card:nth-child(4){animation-delay:0.26s}
+    .card:nth-child(5){animation-delay:0.33s}
 
     @keyframes cardIn { to{opacity:1;transform:translateY(0)} }
 
@@ -293,34 +311,77 @@
     }
 
     /* ── DARK MODE hover: glow ── */
+    .card:active { transform:translateY(-3px) !important; }
+
+    /* Dark mode hover */
     [data-theme="dark"] .card:hover { transform:translateY(-10px); }
     [data-theme="dark"] .card:hover::after { opacity:1; }
-    [data-theme="dark"] .listen:hover { box-shadow:0 24px 60px var(--g-listen); }
-    [data-theme="dark"] .speak:hover  { box-shadow:0 24px 60px var(--g-speak); }
-    [data-theme="dark"] .vocab:hover  { box-shadow:0 24px 60px var(--g-vocab); }
-    [data-theme="dark"] .write:hover  { box-shadow:0 24px 60px var(--g-write); }
 
-    /* ── LIGHT MODE hover: colored border + lift, no glow ── */
-    [data-theme="light"] .card {
-      box-shadow:0 2px 12px rgba(0,0,0,0.06);
-    }
-    [data-theme="light"] .card::after { display:none; } /* kill blob */
-    [data-theme="light"] .card:hover  {
+    /* Light mode */
+    [data-theme="light"] .card { box-shadow:0 2px 12px rgba(0,0,0,0.06); }
+    [data-theme="light"] .card::after { display:none; }
+    [data-theme="light"] .card:hover {
       transform:translateY(-8px);
       box-shadow:0 12px 32px rgba(0,0,0,0.10);
     }
-    [data-theme="light"] .listen:hover { border-color:var(--c-listen); }
-    [data-theme="light"] .speak:hover  { border-color:var(--c-speak); }
-    [data-theme="light"] .vocab:hover  { border-color:var(--c-vocab); }
-    [data-theme="light"] .write:hover  { border-color:var(--c-write); }
 
-    .card:active { transform:translateY(-3px) !important; }
+    /* ── PASTEL CARD BACKGROUNDS — solid color, dark text ── */
+    .listen   { background:#B8DFD8; border-color:#B8DFD8; }
+    .speak    { background:#C5E8CC; border-color:#C5E8CC; }
+    .vocab    { background:#D4C5F0; border-color:#D4C5F0; }
+    .write    { background:#F5D5B5; border-color:#F5D5B5; }
+    .classhub { background:#B8CFEE; border-color:#B8CFEE; }
 
-    /* Per-skill stripes & blobs */
-    .listen::before{background:var(--c-listen)}  .listen::after{background:var(--g-listen)}
-    .speak::before {background:var(--c-speak)}   .speak::after {background:var(--g-speak)}
-    .vocab::before {background:var(--c-vocab)}   .vocab::after {background:var(--g-vocab)}
-    .write::before {background:var(--c-write)}   .write::after {background:var(--g-write)}
+    /* Dark text on pastel */
+    .listen, .speak, .vocab, .write, .classhub {
+      color: #1A1A2E;
+    }
+    .listen .card-name,
+    .speak  .card-name,
+    .vocab  .card-name,
+    .write  .card-name,
+    .classhub .card-name { color: #1A1A2E; }
+
+    .listen .tag, .speak .tag, .vocab .tag,
+    .write  .tag, .classhub .tag {
+      color: rgba(26,26,46,0.70);
+      background: rgba(0,0,0,0.08);
+      border-color: rgba(0,0,0,0.10);
+    }
+
+    /* Stripe — slightly darker shade of card color */
+    .listen::before   { background: #7FBFB8; }
+    .speak::before    { background: #90C99A; }
+    .vocab::before    { background: #A890D8; }
+    .write::before    { background: #E8A878; }
+    .classhub::before { background: #7AAAD8; }
+
+    /* Glow blob — subtle */
+    .listen::after   { background:rgba(127,191,184,0.50); }
+    .speak::after    { background:rgba(144,201,154,0.50); }
+    .vocab::after    { background:rgba(168,144,216,0.50); }
+    .write::after    { background:rgba(232,168,120,0.50); }
+    .classhub::after { background:rgba(122,170,216,0.50); }
+
+    /* Dot color on card name */
+    .listen   .card-name::before { background: #5AABAA; }
+    .speak    .card-name::before { background: #5AAB6A; }
+    .vocab    .card-name::before { background: #8A6AC0; }
+    .write    .card-name::before { background: #D08848; }
+    .classhub .card-name::before { background: #5A8AC0; }
+
+    /* Hover glow */
+    [data-theme="dark"] .listen:hover   { box-shadow:0 24px 60px rgba(127,191,184,0.40); }
+    [data-theme="dark"] .speak:hover    { box-shadow:0 24px 60px rgba(144,201,154,0.40); }
+    [data-theme="dark"] .vocab:hover    { box-shadow:0 24px 60px rgba(168,144,216,0.40); }
+    [data-theme="dark"] .write:hover    { box-shadow:0 24px 60px rgba(232,168,120,0.40); }
+    [data-theme="dark"] .classhub:hover { box-shadow:0 24px 60px rgba(122,170,216,0.40); }
+
+    [data-theme="light"] .listen:hover   { box-shadow:0 12px 32px rgba(127,191,184,0.50); }
+    [data-theme="light"] .speak:hover    { box-shadow:0 12px 32px rgba(144,201,154,0.50); }
+    [data-theme="light"] .vocab:hover    { box-shadow:0 12px 32px rgba(168,144,216,0.50); }
+    [data-theme="light"] .write:hover    { box-shadow:0 12px 32px rgba(232,168,120,0.50); }
+    [data-theme="light"] .classhub:hover { box-shadow:0 12px 32px rgba(122,170,216,0.50); }
 
     /* Card internals */
     .card-icon { font-size:2.2rem; line-height:1; margin-bottom:auto; }
@@ -621,6 +682,23 @@
     <main>
       <div class="grid">
 
+        <!-- CLASS-HUB — full width top -->
+        <a class="card classhub"
+           href="https://l2practice.github.io/class-hub/"
+           target="l2p-classhub" rel="noopener noreferrer"
+           aria-label="Class Hub — track lessons and homework">
+          <span class="card-icon" aria-hidden="true">🎓</span>
+          <div class="card-body">
+            <div class="card-name">Class Hub</div>
+            <div class="card-tags">
+              <span class="tag">Lessons</span>
+              <span class="tag">Homework</span>
+              <span class="tag">Attendance</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- LISTENING -->
         <a class="card listen"
            href="https://l2practice.github.io/listen-dictation"
            target="l2p-listen" rel="noopener noreferrer"
@@ -632,6 +710,7 @@
           </div>
         </a>
 
+        <!-- SPEAKING -->
         <a class="card speak"
            href="https://l2practice.github.io/fluentalk"
            target="l2p-speak" rel="noopener noreferrer"
@@ -646,6 +725,7 @@
           </div>
         </a>
 
+        <!-- VOCABULARY -->
         <a class="card vocab"
            href="https://l2practice.github.io/vocab-master"
            target="l2p-vocab" rel="noopener noreferrer"
@@ -660,6 +740,7 @@
           </div>
         </a>
 
+        <!-- WRITING -->
         <a class="card write"
            href="https://l2practice.github.io/artwrite/login.html"
            target="l2p-write" rel="noopener noreferrer"
@@ -754,13 +835,14 @@
         </div>
 
         <div class="su-apps-note">
+          <span class="su-app-pill" style="background:var(--c-classhub)">🎓 Class Hub</span>
           <span class="su-app-pill listen-pill">🎧 Listening</span>
           <span class="su-app-pill speak-pill">🎤 Speaking</span>
           <span class="su-app-pill vocab-pill">📖 Vocabulary</span>
           <span class="su-app-pill write-pill">✍️ Writing</span>
         </div>
 
-        <button class="su-submit" id="suSubmit">Create Account for All 4 Apps</button>
+        <button class="su-submit" id="suSubmit">Create Account for All 5 Apps</button>
         <div class="su-toast" id="suToast"></div>
       </div>
 
@@ -984,7 +1066,7 @@
       verifyBtn.disabled = false;
       verifyBtn.textContent = 'Verify';
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Create Account for All 4 Apps';
+      submitBtn.textContent = 'Create Account for All 5 Apps';
     }
 
     /* GAS GET helper — avoids CORS preflight entirely */
@@ -1075,7 +1157,7 @@
       gasGet({ action:'register', data: payload })
         .then(function(res){
           submitBtn.disabled = false;
-          submitBtn.textContent = 'Create Account for All 4 Apps';
+          submitBtn.textContent = 'Create Account for All 5 Apps';
           if(res.success){
             showToast('✓ ' + res.message, 'ok');
             setTimeout(closeModal, 4000);
@@ -1085,7 +1167,7 @@
         })
         .catch(function(){
           submitBtn.disabled = false;
-          submitBtn.textContent = 'Create Account for All 4 Apps';
+          submitBtn.textContent = 'Create Account for All 5 Apps';
           showToast('Could not reach server. Please check your connection.','err');
         });
     };
