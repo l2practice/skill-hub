@@ -106,7 +106,10 @@
   // Sign in as teacher in one app, create the class there. → { code, idToken }
   async function createInApp(key, f) {
     var h = fbApp(key);
-    var cred = await h.auth.signInWithEmailAndPassword(f.email, authPw(f.password));
+    // Speaking may use its own teacher account
+    var em = (key === 'speaking' && f.spEmail) ? f.spEmail : f.email;
+    var pw = (key === 'speaking' && f.spEmail) ? f.spPassword : f.password;
+    var cred = await h.auth.signInWithEmailAndPassword(em, authPw(pw));
     var uid = cred.user.uid;
     var idToken = await cred.user.getIdToken();
 
@@ -117,7 +120,7 @@
     } catch (e) {}
 
     var form = { className: f.className, year: f.year, semester: f.semester, uid: uid,
-                 email: f.email, teacherName: teacherName, now: new Date().toISOString() };
+                 email: em, teacherName: teacherName, now: new Date().toISOString() };
     var code = '';
     for (var i = 0; i < 20; i++) {
       var c = GEN[key]();
@@ -158,7 +161,7 @@
     if (token) {
       try {
         var res = await post({ action: 'saveClass', idToken: token, project: tokenFrom, className: f.className,
-                               codes: codes, classHubName: f.classHubName || '' });
+                               codes: codes, classHubName: f.classHubName || '', hubCode: f.existing || '' });
         if (res.success) hubCode = res.hubCode; else results._save = { ok: false, error: res.error };
       } catch (e) { results._save = { ok: false, error: 'could not reach the hub server' }; }
     } else {
@@ -175,7 +178,10 @@
     if (!overlay || !openBtn) return;
     var toast = $('ccToast'), submit = $('ccSubmit'), result = $('ccResult'), form = $('ccForm');
 
-    function say(msg, type) { toast.textContent = msg; toast.className = 'su-toast' + (type ? ' ' + type : ''); }
+    function say(msg, type) {
+      toast.textContent = msg; toast.className = 'su-toast' + (type ? ' ' + type : '');
+      if (msg) { try { toast.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {} }
+    }
     function close() { overlay.classList.remove('open'); }
 
     function loadClassHubClasses() {
@@ -203,6 +209,7 @@
       $('ccHubWrap').style.display = on ? '' : 'none';
     };
     $('cc_classhub').onchange = function () { $('ccHubWrap').style.display = this.checked ? '' : 'none'; };
+    $('cc_spDiff').onchange = function () { $('ccSpWrap').style.display = this.checked ? '' : 'none'; };
 
     submit.onclick = async function () {
       var chosen = ORDER.filter(function (k) { return $('cc_' + k).checked; });
@@ -210,12 +217,17 @@
       var f = {
         email: $('ccEmail').value.trim().toLowerCase(), password: $('ccPw').value,
         className: $('ccName').value.trim(), year: $('ccYear').value.trim(), semester: $('ccSem').value.trim(),
-        apps: chosen, classHubName: wantHub ? $('ccHubClass').value : ''
+        apps: chosen, classHubName: wantHub ? $('ccHubClass').value : '',
+        existing: $('ccExisting').value.trim().toUpperCase()
       };
+      if ($('cc_spDiff').checked) { f.spEmail = $('ccSpEmail').value.trim().toLowerCase(); f.spPassword = $('ccSpPw').value; }
       if (!f.className) return say('⚠ Enter the class name.', 'err');
       if (!chosen.length) return say('⚠ Tick at least one of Speaking, Listening, Vocab or Writing (Class Hub alone does not need the hub).', 'err');
       if (wantHub && !f.classHubName) return say('⚠ Choose the Class Hub class, or untick Class Hub.', 'err');
       if (!f.email || !f.password) return say('⚠ Enter your teacher email and password.', 'err');
+      if ($('cc_spDiff').checked && chosen.indexOf('speaking') >= 0 && (!f.spEmail || !f.spPassword))
+        return say('⚠ Enter the Speaking teacher email and password.', 'err');
+      if (f.existing && !/^HUB-[A-Z0-9]{6}$/.test(f.existing)) return say('⚠ The existing class code looks like HUB-ABC123.', 'err');
 
       submit.disabled = true; submit.innerHTML = '<span class="su-spin"></span> Creating class…'; say('');
       var out;

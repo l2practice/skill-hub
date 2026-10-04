@@ -843,6 +843,18 @@
           <div class="su-field"><label class="su-label">Teacher email <span class="su-req">*</span></label><input class="su-input" id="ccEmail" type="email" autocomplete="username"></div>
           <div class="su-field"><label class="su-label">Password <span class="su-req">*</span></label><input class="su-input" id="ccPw" type="password" autocomplete="current-password"></div>
         </div>
+        <label class="cc-check"><input type="checkbox" id="cc_spDiff"> Speaking uses a different teacher email/password</label>
+        <div id="ccSpWrap" style="display:none">
+          <div class="su-row">
+            <div class="su-field"><label class="su-label">Speaking email</label><input class="su-input" id="ccSpEmail" type="email" autocomplete="off"></div>
+            <div class="su-field"><label class="su-label">Speaking password</label><input class="su-input" id="ccSpPw" type="password" autocomplete="off"></div>
+          </div>
+        </div>
+        <div class="su-field" style="margin-top:8px">
+          <label class="su-label">Add to an existing class (optional)</label>
+          <input class="su-input" id="ccExisting" placeholder="HUB-ABC123" style="text-transform:uppercase;font-family:monospace">
+          <div class="su-hint">Already created this class and one app failed? Enter its HUB code and tick only the missing app(s). Only empty app codes are filled; nothing is overwritten.</div>
+        </div>
         <button class="su-submit" id="ccSubmit">Create Class</button>
         <div class="su-toast" id="ccToast"></div>
       </div>

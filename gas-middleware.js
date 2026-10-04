@@ -231,6 +231,21 @@ function handleSaveClass(p) {
       .forEach(function (h, i) { if (!head[i]) sheet.getRange(1, i + 1).setValue(h).setFontWeight('bold'); });
 
     var data = sheet.getDataRange().getValues(), used = {};
+
+    // Thêm app còn thiếu vào lớp đã có (HubCode): chỉ điền ô đang TRỐNG, không ghi đè
+    var existing = (p.hubCode || '').toString().trim().toUpperCase();
+    if (existing) {
+      for (var e = 1; e < data.length; e++) {
+        if ((data[e][7] || '').toString().trim().toUpperCase() !== existing) continue;
+        var cols = { speaking: 2, listening: 3, vocab: 4, writing: 5 }, added = [];
+        Object.keys(cols).forEach(function (k) {
+          if (clean[k] && !(data[e][cols[k] - 1] || '').toString().trim()) { sheet.getRange(e + 1, cols[k]).setValue(clean[k]); added.push(k); }
+        });
+        if (classHubName && !(data[e][5] || '').toString().trim()) sheet.getRange(e + 1, 6).setValue(classHubName);
+        return { success: true, hubCode: existing, added: added };
+      }
+      return { success: false, error: 'Class code ' + existing + ' not found.' };
+    }
     for (var i = 1; i < data.length; i++) for (var c = 1; c <= 4; c++) used[(data[i][c] || '').toString().trim().toUpperCase()] = 1;
     for (var j = 1; j < data.length; j++) used[(data[j][7] || '').toString().trim().toUpperCase()] = 1;
     var hubCode = '', CH = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
