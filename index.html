@@ -407,6 +407,7 @@
     .signup-link:hover { opacity:0.8; }
 
     /* ── MODAL OVERLAY ── */
+    .cc-check { display:flex; align-items:center; gap:8px; font-size:0.9rem; padding:3px 0; cursor:pointer; }
     .su-overlay {
       display:none; position:fixed; inset:0; z-index:9999;
       background:rgba(0,0,0,0.70);
@@ -795,12 +796,67 @@
     </main>
 
     <div class="signup-bar" id="signup">
-      <p>New student? <button class="signup-link" id="openSignup">Create an account</button> to access all 4 apps with one code.</p>
+      <p>New student? <button class="signup-link" id="openSignup">Create an account</button> to access all your class apps with one code.</p>
+      <p>Teacher? <button class="signup-link" id="openCreateClass">Create a class</button> in several apps at once.</p>
     </div>
 
     <footer>
       <p>© 2026 Second Language Practice <span class="dot"></span> For students</p>
     </footer>
+  </div>
+
+  <!-- ── CREATE CLASS MODAL (teachers) ── -->
+  <div class="su-overlay" id="ccOverlay">
+    <div class="su-modal">
+      <button class="su-close" id="ccClose" aria-label="Close">✕</button>
+      <div class="su-header">
+        <div class="su-title">Create Class</div>
+        <p class="su-sub">Create the same class in the apps you choose. You sign in with your teacher email and password (the same in every app).</p>
+      </div>
+
+      <div id="ccForm">
+        <div class="su-field">
+          <label class="su-label">Class name <span class="su-req">*</span></label>
+          <input class="su-input" id="ccName" placeholder="e.g. IELTS 43">
+        </div>
+        <div class="su-row">
+          <div class="su-field"><label class="su-label">Academic year</label><input class="su-input" id="ccYear" placeholder="2026-2027"></div>
+          <div class="su-field"><label class="su-label">Semester</label><input class="su-input" id="ccSem" placeholder="1"></div>
+        </div>
+
+        <div class="su-field">
+          <label class="su-label">Apps for this class <span class="su-req">*</span></label>
+          <label class="cc-check"><input type="checkbox" id="cc_all"> <b>All apps</b></label>
+          <label class="cc-check"><input type="checkbox" id="cc_speaking"> 🎤 Speaking</label>
+          <label class="cc-check"><input type="checkbox" id="cc_listening"> 🎧 Listening</label>
+          <label class="cc-check"><input type="checkbox" id="cc_vocab"> 📖 Vocabulary</label>
+          <label class="cc-check"><input type="checkbox" id="cc_writing"> ✍️ Writing</label>
+          <label class="cc-check"><input type="checkbox" id="cc_classhub"> 🎓 Class Hub</label>
+          <div id="ccHubWrap" style="display:none;margin-top:6px">
+            <select class="su-input" id="ccHubClass"><option value="">Loading Class Hub classes…</option></select>
+            <div class="su-hint">Class Hub classes come from its sheet — create the class there first, then pick it here.</div>
+          </div>
+        </div>
+
+        <div class="su-divider"></div>
+        <div class="su-row">
+          <div class="su-field"><label class="su-label">Teacher email <span class="su-req">*</span></label><input class="su-input" id="ccEmail" type="email" autocomplete="username"></div>
+          <div class="su-field"><label class="su-label">Password <span class="su-req">*</span></label><input class="su-input" id="ccPw" type="password" autocomplete="current-password"></div>
+        </div>
+        <button class="su-submit" id="ccSubmit">Create Class</button>
+        <div class="su-toast" id="ccToast"></div>
+      </div>
+
+      <div id="ccResult" style="display:none">
+        <div id="ccHubCodeWrap">
+          <div class="su-label">Give this code to students</div>
+          <div class="su-class-badge" style="display:block;font-size:1.4rem;font-family:monospace;letter-spacing:.1em" id="ccHubCode"></div>
+          <div class="su-hint">Students enter it in “Create an account”. The app codes below also work inside each app.</div>
+        </div>
+        <pre id="ccLines" style="white-space:pre-wrap;font-size:.8rem;line-height:1.6;margin:14px 0"></pre>
+        <button class="su-submit" id="ccAgain">Create another class</button>
+      </div>
+    </div>
   </div>
 
   <!-- ── SIGN UP MODAL ── -->
@@ -889,7 +945,9 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
   <script src="https://l2practice.github.io/class-hub/db.js"></script>
+  <script src="hub-create-class.js"></script>
 
   <script>
 
@@ -1050,7 +1108,7 @@
   })();
   /* ── SIGN UP MODAL ── */
   (function(){
-    var HUB_API = 'https://script.google.com/macros/s/AKfycbxRrrVkS4itZTlHim1HbD4RU2R9ViLdCFp92LpCe9Mm0IZVfBEoraOAmYqaxdAv259sMA/exec';
+    var HUB_API = window.HUB_API = 'https://script.google.com/macros/s/AKfycbxRrrVkS4itZTlHim1HbD4RU2R9ViLdCFp92LpCe9Mm0IZVfBEoraOAmYqaxdAv259sMA/exec';
 
     var overlay  = document.getElementById('suOverlay');
     var btnOpen  = document.getElementById('openSignup');
