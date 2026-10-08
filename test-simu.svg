@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 300" preserveAspectRatio="xMidYMid slice" role="img" aria-label="A student wearing headphones sits at a computer and takes an online test">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0c2f3a"/>
+      <stop offset="0.55" stop-color="#14525a"/>
+      <stop offset="1" stop-color="#1d6b66"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f6faf8"/>
+      <stop offset="1" stop-color="#dfece7"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#7fe0c4" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#7fe0c4" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1600" height="300" fill="url(#bg)"/>
+  <!-- soft background shapes -->
+  <circle cx="1230" cy="120" r="170" fill="url(#glow)"/>
+  <circle cx="1480" cy="40" r="90" fill="#ffffff" opacity="0.05"/>
+  <circle cx="760" cy="260" r="130" fill="#ffffff" opacity="0.04"/>
+
+  <!-- floating listening / test bits -->
+  <g opacity="0.9">
+    <!-- waveform -->
+    <g fill="#f4cc55">
+      <rect x="690" y="124" width="6" height="22" rx="3"/>
+      <rect x="702" y="110" width="6" height="50" rx="3"/>
+      <rect x="714" y="94" width="6" height="82" rx="3"/>
+      <rect x="726" y="112" width="6" height="46" rx="3"/>
+      <rect x="738" y="100" width="6" height="70" rx="3"/>
+      <rect x="750" y="118" width="6" height="34" rx="3"/>
+      <rect x="762" y="128" width="6" height="14" rx="3"/>
+    </g>
+    <!-- timer -->
+    <g transform="translate(1520 78)">
+      <circle r="26" fill="#0c2f3a" stroke="#74b9e0" stroke-width="4"/>
+      <path d="M0 -14V0l10 6" fill="none" stroke="#74b9e0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <!-- answer chips -->
+    <g font-family="Inter, system-ui, sans-serif" font-size="17" font-weight="700" text-anchor="middle">
+      <rect x="1440" y="168" width="36" height="36" rx="10" fill="#5bbfaa"/><text x="1458" y="192" fill="#06303a">A</text>
+      <rect x="1484" y="168" width="36" height="36" rx="10" fill="#ffffff" opacity="0.18"/><text x="1502" y="192" fill="#ffffff">B</text>
+      <rect x="1528" y="168" width="36" height="36" rx="10" fill="#ffffff" opacity="0.18"/><text x="1546" y="192" fill="#ffffff">C</text>
+    </g>
+  </g>
+
+  <!-- desk -->
+  <rect x="780" y="236" width="820" height="64" fill="#26323a"/>
+  <rect x="780" y="230" width="820" height="12" rx="3" fill="#3b4854"/>
+
+  <!-- monitor -->
+  <g>
+    <rect x="1236" y="206" width="22" height="30" fill="#18222a"/>
+    <ellipse cx="1247" cy="236" rx="62" ry="7" fill="#18222a"/>
+    <rect x="1110" y="46" width="274" height="170" rx="12" fill="#10181e"/>
+    <rect x="1120" y="56" width="254" height="146" rx="6" fill="url(#screen)"/>
+    <!-- screen content: a listening test question -->
+    <rect x="1120" y="56" width="254" height="22" rx="6" fill="#0f6b4f"/>
+    <rect x="1120" y="70" width="254" height="8" fill="#0f6b4f"/>
+    <circle cx="1134" cy="67" r="4" fill="#ffffff" opacity="0.9"/>
+    <rect x="1146" y="63" width="70" height="7" rx="3.5" fill="#ffffff" opacity="0.85"/>
+    <rect x="1330" y="63" width="34" height="7" rx="3.5" fill="#f4cc55"/>
+    <!-- audio player bar -->
+    <rect x="1134" y="90" width="226" height="20" rx="10" fill="#cfe3dc"/>
+    <path d="M1148 94l9 6-9 6z" fill="#0f6b4f"/>
+    <rect x="1168" y="98" width="150" height="4" rx="2" fill="#9cc3b6"/>
+    <rect x="1168" y="98" width="62" height="4" rx="2" fill="#0f6b4f"/>
+    <!-- options -->
+    <g fill="#9cc3b6">
+      <circle cx="1142" cy="128" r="6"/><circle cx="1142" cy="148" r="6"/><circle cx="1142" cy="168" r="6"/><circle cx="1142" cy="188" r="6"/>
+    </g>
+    <circle cx="1142" cy="148" r="6" fill="#0f6b4f"/>
+    <circle cx="1142" cy="148" r="2.6" fill="#f6faf8"/>
+    <g fill="#5d7a70">
+      <rect x="1158" y="125" width="150" height="6" rx="3"/>
+      <rect x="1158" y="145" width="178" height="6" rx="3"/>
+      <rect x="1158" y="165" width="120" height="6" rx="3"/>
+      <rect x="1158" y="185" width="160" height="6" rx="3"/>
+    </g>
+  </g>
+
+  <!-- keyboard + mouse -->
+  <rect x="1040" y="222" width="130" height="10" rx="4" fill="#0f171d"/>
+  <rect x="1048" y="224" width="114" height="2.5" rx="1.2" fill="#2c3a44"/>
+  <ellipse cx="1214" cy="228" rx="12" ry="5" fill="#0f171d"/>
+
+  <!-- chair back -->
+  <rect x="878" y="150" width="120" height="150" rx="26" fill="#1c2a33"/>
+
+  <!-- student (seen from behind, turned toward the screen) -->
+  <g>
+    <!-- torso / hoodie -->
+    <path d="M900 300 C896 238 912 196 952 184 L1012 184 C1050 196 1064 238 1060 300 Z" fill="#f4a47a"/>
+    <path d="M952 184 C964 202 998 202 1012 184 L1012 196 C998 214 964 214 952 196 Z" fill="#e48c62"/>
+    <!-- back arm reaching to the keyboard -->
+    <path d="M1030 214 C1058 226 1074 226 1092 228 L1092 216 C1070 214 1052 206 1040 192 Z" fill="#e48c62"/>
+    <circle cx="1100" cy="222" r="9" fill="#d9a07f"/>
+    <!-- neck -->
+    <rect x="968" y="150" width="30" height="40" rx="12" fill="#d9a07f"/>
+    <!-- head, seen from behind: hair covers most of it, a sliver of face and the ear face the screen -->
+    <ellipse cx="1000" cy="116" rx="38" ry="46" fill="#d9a07f"/>
+    <ellipse cx="978" cy="112" rx="46" ry="52" fill="#1a1d24"/>
+    <path d="M938 140 C940 156 952 166 968 168 L972 150 Z" fill="#1a1d24"/>
+    <!-- headphones: band over the head, cup on the visible ear -->
+    <path d="M934 116 C926 56 958 34 990 38 C1022 42 1042 70 1034 116" fill="none" stroke="#14202a" stroke-width="10" stroke-linecap="round"/>
+    <path d="M934 116 C926 56 958 34 990 38 C1022 42 1042 70 1034 116" fill="none" stroke="#74b9e0" stroke-width="3" stroke-linecap="round"/>
+    <rect x="1016" y="96" width="32" height="50" rx="16" fill="#14202a"/>
+    <rect x="1023" y="105" width="18" height="32" rx="9" fill="#74b9e0"/>
+    <rect x="926" y="98" width="22" height="44" rx="11" fill="#14202a"/>
+  </g>
+
+  <!-- sound waves from the headphones -->
+  <g fill="none" stroke="#74b9e0" stroke-width="3.5" stroke-linecap="round" opacity="0.9">
+    <path d="M1062 106 C1070 114 1070 128 1062 136"/>
+    <path d="M1074 98 C1088 112 1088 130 1074 144"/>
+  </g>
+
+  <!-- desk lamp -->
+  <g>
+    <path d="M820 230 L838 150 L864 128" fill="none" stroke="#9fb3bd" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M850 126 L884 114 L878 140 Z" fill="#f4cc55"/>
+    <ellipse cx="820" cy="232" rx="20" ry="5" fill="#9fb3bd"/>
+  </g>
+</svg>

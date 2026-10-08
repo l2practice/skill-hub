@@ -41,11 +41,16 @@
       apiKey: 'AIzaSyCj8WTr6eaqMGhqKltiZ9444LELV-7ZDIw', authDomain: 'articuwrite.firebaseapp.com',
       databaseURL: 'https://articuwrite-default-rtdb.asia-southeast1.firebasedatabase.app',
       projectId: 'articuwrite'
+    },
+    test: {
+      apiKey: 'AIzaSyD6eVCp-pTOzhmBBqDlD25vso4Dku2uc1k', authDomain: 'test-simulation-4dc1b.firebaseapp.com',
+      projectId: 'test-simulation-4dc1b', storageBucket: 'test-simulation-4dc1b.firebasestorage.app',
+      messagingSenderId: '937357416203', appId: '1:937357416203:web:972c27f402f4b58b3af40e'
     }
   };
 
-  var LABEL = { speaking: 'Speaking', listening: 'Listening', vocab: 'Vocab', writing: 'Writing', classhub: 'Class Hub' };
-  var ORDER = ['speaking', 'listening', 'vocab', 'writing'];
+  var LABEL = { speaking: 'Speaking', listening: 'Listening', vocab: 'Vocab', writing: 'Writing', test: 'Test Simulation', classhub: 'Class Hub' };
+  var ORDER = ['speaking', 'listening', 'vocab', 'writing', 'test'];
 
   var L3 = 'ABCDEFGHJKMNPQRSTUVWXYZ', D3 = '23456789', C5 = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   function pick(set, n) {
@@ -59,7 +64,8 @@
     speaking : function () { return pick(L3, 3) + pick(D3, 3); },
     listening: function () { return 'LD-' + pick(L3, 3) + pick(D3, 3); },
     vocab    : function () { return 'VM-' + pick(C5, 5); },
-    writing  : function () { return 'AW-' + pick(C5, 5); }
+    writing  : function () { return 'AW-' + pick(C5, 5); },
+    test     : function () { return 'TS-' + pick(C5, 5); }
   };
 
   // Document each app stores in classes/{code}
@@ -79,6 +85,11 @@
     writing: function (c, f) {
       return { classId: c, className: f.className, year: f.year, semester: f.semester,
                teacherUid: f.uid, teacherEmail: f.email, aiEnabled: true, archived: false, createdAt: f.now };
+    },
+    // Test Simulation is a VocabMaster fork: same class document
+    test: function (c, f) {
+      return { classId: c, className: f.className, academicYear: f.year, semester: f.semester,
+               teacherUid: f.uid, teacherName: f.teacherName, teacherEmail: f.email, status: 'Active', createdAt: f.now };
     }
   };
 
@@ -222,7 +233,7 @@
       };
       if ($('cc_spDiff').checked) { f.spEmail = $('ccSpEmail').value.trim().toLowerCase(); f.spPassword = $('ccSpPw').value; }
       if (!f.className) return say('⚠ Enter the class name.', 'err');
-      if (!chosen.length) return say('⚠ Tick at least one of Speaking, Listening, Vocab or Writing (Class Hub alone does not need the hub).', 'err');
+      if (!chosen.length) return say('⚠ Tick at least one app besides Class Hub (Class Hub alone does not need the hub).', 'err');
       if (wantHub && !f.classHubName) return say('⚠ Choose the Class Hub class, or untick Class Hub.', 'err');
       if (!f.email || !f.password) return say('⚠ Enter your teacher email and password.', 'err');
       if ($('cc_spDiff').checked && chosen.indexOf('speaking') >= 0 && (!f.spEmail || !f.spPassword))
