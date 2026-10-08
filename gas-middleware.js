@@ -6,6 +6,7 @@
  * một StudentID + mật khẩu:
  *
  *   Writing   (ArticuWrite)   fb.studentSignup
+ *   Test      (Test Simulation) fb.register (VocabMaster fork)
  *   Listening (LisDictation)  fb.register
  *   Vocab     (VocabMaster)   fb.register
  *   Speaking  (Fluentalk)     auth.register
@@ -13,7 +14,7 @@
  *                             duyệt (DB.register) rồi báo kết quả lại qua action setStatus.
  *
  * Master Sheet:
- *   Tab Classes : ClassName | SpeakingCode | ListeningCode | VocabCode | WritingCode | ClassHubName | TeacherEmail | HubCode
+ *   Tab Classes : ClassName | SpeakingCode | ListeningCode | VocabCode | WritingCode | ClassHubName | TeacherEmail | HubCode | TestCode
  *                 Ô trống = lớp không dùng app đó (SV chỉ được tạo tài khoản ở app có mã).
  *                 Hàng mới do nút "Create Class" của GV (action saveClass) ghi; HubCode là mã GV phát cho SV.
  *   Tab Students: A RegisteredAt | B StudentID | C FullName | D DOB | E Email | F Phone
@@ -31,16 +32,18 @@ var APP_URL = {
   speaking : 'https://script.google.com/macros/s/AKfycbzxCevaShEohE2PkyB71xyunBfF6YqpW9ESwvnEVVKfYTIc2FGUDXW4bIM_jUnXuYrWmA/exec',
   listening: 'https://script.google.com/macros/s/AKfycbyadq7DEYYcTNKILHotdXw7cCElBwggj4JGHJ3JD6tM07agn1CQq6aSklIwii5G0iiQ/exec',
   vocab    : 'https://script.google.com/macros/s/AKfycbwj-XE8zxBifrn7BgcbIGegqeeoKAPnYIBUPX7dOuCQozNQvkOgmS9bT3tC92W3kwoM/exec',
-  writing  : 'https://script.google.com/macros/s/AKfycbxgVhsy3WKU-hL7rW7GZaNsn0B-z6zt6iH2Q-UlpbJVqP9koAE49P175m0tR3ISGp-m/exec'
+  writing  : 'https://script.google.com/macros/s/AKfycbxgVhsy3WKU-hL7rW7GZaNsn0B-z6zt6iH2Q-UlpbJVqP9koAE49P175m0tR3ISGp-m/exec',
+  test     : 'https://script.google.com/macros/s/AKfycbwJDOTjt4wS9cO9KCFm9Hg_foSEDoYwa_-kRoQIHWolHfCqBz7CeZOi9XLRTaZZD4xY/exec'
 };
 // Web API key của từng Firebase project (công khai) — dùng để xác thực ID token của GV khi tạo lớp
 var APP_API_KEY = {
   speaking : 'AIzaSyAeB-tcXD9QOkppW4oshpFI4aXe9T33kws',
   listening: 'AIzaSyABj5BoT_Bz8aGJ6bys8LWCLAFhut5VJL8',
   vocab    : 'AIzaSyAhoWEygnchnXPf1BaG2T6ZvpV0VY7oeeY',
-  writing  : 'AIzaSyCj8WTr6eaqMGhqKltiZ9444LELV-7ZDIw'
+  writing  : 'AIzaSyCj8WTr6eaqMGhqKltiZ9444LELV-7ZDIw',
+  test     : 'AIzaSyD6eVCp-pTOzhmBBqDlD25vso4Dku2uc1k'
 };
-var APP_LABEL = { speaking:'Speaking', listening:'Listening', vocab:'Vocab', writing:'Writing', classhub:'Class Hub' };
+var APP_LABEL = { speaking:'Speaking', listening:'Listening', vocab:'Vocab', writing:'Writing', test:'Test Simulation', classhub:'Class Hub' };
 
 var CLASSES_TAB  = 'Classes';
 var STUDENTS_TAB = 'Students';
@@ -144,7 +147,7 @@ function handleRegister(body) {
   }
 
   // Chỉ các app lớp này dùng, và chưa thành công ở lần trước
-  var APPS = ['speaking','listening','vocab','writing'];
+  var APPS = ['speaking','listening','vocab','writing','test'];
   var todo = APPS.filter(function (k) {
     return row[k + 'Code'] && !isOk(prev[k]);
   });
@@ -212,12 +215,12 @@ function handleSaveClass(p) {
   var className = (p.className || '').toString().trim();
   if (!className) return { success: false, error: 'Missing class name.' };
   var codes = p.codes || {}, clean = {};
-  ['speaking','listening','vocab','writing'].forEach(function (k) {
+  ['speaking','listening','vocab','writing','test'].forEach(function (k) {
     var c = (codes[k] || '').toString().trim().toUpperCase();
     if (c && !/^[A-Z0-9-]{3,20}$/.test(c)) throw new Error('Bad ' + APP_LABEL[k] + ' code.');
     clean[k] = c;
   });
-  if (!clean.speaking && !clean.listening && !clean.vocab && !clean.writing)
+  if (!clean.speaking && !clean.listening && !clean.vocab && !clean.writing && !clean.test)
     return { success: false, error: 'No app code to save.' };
   var classHubName = (p.classHubName || '').toString().trim();
 
@@ -226,8 +229,8 @@ function handleSaveClass(p) {
   try {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CLASSES_TAB);
     if (!sheet) throw new Error('Sheet "' + CLASSES_TAB + '" not found.');
-    var head = sheet.getRange(1, 1, 1, 8).getValues()[0];
-    ['ClassName','SpeakingCode','ListeningCode','VocabCode','WritingCode','ClassHubName','TeacherEmail','HubCode']
+    var head = sheet.getRange(1, 1, 1, 9).getValues()[0];
+    ['ClassName','SpeakingCode','ListeningCode','VocabCode','WritingCode','ClassHubName','TeacherEmail','HubCode','TestCode']
       .forEach(function (h, i) { if (!head[i]) sheet.getRange(1, i + 1).setValue(h).setFontWeight('bold'); });
 
     var data = sheet.getDataRange().getValues(), used = {};
@@ -237,7 +240,7 @@ function handleSaveClass(p) {
     if (existing) {
       for (var e = 1; e < data.length; e++) {
         if ((data[e][7] || '').toString().trim().toUpperCase() !== existing) continue;
-        var cols = { speaking: 2, listening: 3, vocab: 4, writing: 5 }, added = [];
+        var cols = { speaking: 2, listening: 3, vocab: 4, writing: 5, test: 9 }, added = [];
         Object.keys(cols).forEach(function (k) {
           if (clean[k] && !(data[e][cols[k] - 1] || '').toString().trim()) { sheet.getRange(e + 1, cols[k]).setValue(clean[k]); added.push(k); }
         });
@@ -247,14 +250,17 @@ function handleSaveClass(p) {
       return { success: false, error: 'Class code ' + existing + ' not found.' };
     }
     for (var i = 1; i < data.length; i++) for (var c = 1; c <= 4; c++) used[(data[i][c] || '').toString().trim().toUpperCase()] = 1;
-    for (var j = 1; j < data.length; j++) used[(data[j][7] || '').toString().trim().toUpperCase()] = 1;
+    for (var j = 1; j < data.length; j++) {
+      used[(data[j][7] || '').toString().trim().toUpperCase()] = 1;   // HubCode
+      used[(data[j][8] || '').toString().trim().toUpperCase()] = 1;   // TestCode
+    }
     var hubCode = '', CH = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     for (var t = 0; t < 50 && !hubCode; t++) {
       var x = 'HUB-'; for (var n = 0; n < 6; n++) x += CH.charAt(Math.floor(Math.random() * CH.length));
       if (!used[x]) hubCode = x;
     }
     if (!hubCode) throw new Error('Could not generate a hub code.');
-    sheet.appendRow([className, clean.speaking, clean.listening, clean.vocab, clean.writing, classHubName, v.email, hubCode]);
+    sheet.appendRow([className, clean.speaking, clean.listening, clean.vocab, clean.writing, classHubName, v.email, hubCode, clean.test]);
     return { success: true, hubCode: hubCode };
   } finally { lock.releaseLock(); }
 }
@@ -281,7 +287,7 @@ function buildRequest(app, classCode, s) {
     action = 'fb.studentSignup';
     payload = { studentId: s.studentId, name: s.fullName, class: classCode, email: s.email,
                 birthdate: s.dob, phone: s.phone, password: s.password };
-  } else if (app === 'listening' || app === 'vocab') {
+  } else if (app === 'listening' || app === 'vocab' || app === 'test') {
     action = 'fb.register';
     payload = { studentId: s.studentId, fullName: s.fullName, classId: classCode, email: s.email,
                 phone: s.phone, birthdate: s.dob, password: s.password };
@@ -314,18 +320,18 @@ function describe(status) {
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
-// Tab Classes: A ClassName | B Speaking | C Listening | D Vocab | E Writing | F ClassHubName | G TeacherEmail | H HubCode
+// Tab Classes: A ClassName | B Speaking | C Listening | D Vocab | E Writing | F ClassHubName | G TeacherEmail | H HubCode | I TestCode
 function findClassRow(code) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CLASSES_TAB);
   if (!sheet) throw new Error('Sheet "' + CLASSES_TAB + '" not found.');
   var data = sheet.getDataRange().getValues();
   for (var i = 1; i < data.length; i++) {
-    var codes = [1, 2, 3, 4].map(function (c) { return (data[i][c] || '').toString().trim(); });
+    var codes = [1, 2, 3, 4, 8].map(function (c) { return (data[i][c] || '').toString().trim(); });
     var hubCode = (data[i][7] || '').toString().trim();
     if (codes.some(function (c) { return c && c.toUpperCase() === code; }) || (hubCode && hubCode.toUpperCase() === code)) {
       return {
         className    : data[i][0],
-        speakingCode : codes[0], listeningCode: codes[1], vocabCode: codes[2], writingCode: codes[3],
+        speakingCode : codes[0], listeningCode: codes[1], vocabCode: codes[2], writingCode: codes[3], testCode: codes[4],
         classHubName : (data[i][5] || '').toString().trim(),
         hubCode      : hubCode
       };
@@ -340,6 +346,7 @@ function appsOf(row) {
   if (row.listeningCode) out.push('listening');
   if (row.vocabCode)     out.push('vocab');
   if (row.writingCode)   out.push('writing');
+  if (row.testCode)      out.push('test');
   if (row.classHubName)  out.push('classhub');
   return out;
 }

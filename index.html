@@ -263,6 +263,7 @@
     .card:nth-child(3){animation-delay:0.19s}
     .card:nth-child(4){animation-delay:0.26s}
     .card:nth-child(5){animation-delay:0.33s}
+    .card:nth-child(6){animation-delay:0.40s}
 
     @keyframes cardIn { to{opacity:1;transform:translateY(0)} }
 
@@ -299,7 +300,7 @@
 
     /* Text white on all cards */
     .listen .card-name, .speak .card-name, .vocab .card-name,
-    .write  .card-name, .classhub .card-name { color:#fff; }
+    .write  .card-name, .classhub .card-name, .test .card-name { color:#fff; }
 
     .listen .tag, .speak .tag, .vocab .tag,
     .write  .tag, .classhub .tag {
@@ -523,6 +524,7 @@
     .speak-pill  { background:var(--c-speak); }
     .vocab-pill  { background:var(--c-vocab); }
     .write-pill  { background:var(--c-write); }
+    .test-pill   { background:#2E8F7A; }
 
     /* Submit button */
     .su-submit {
@@ -614,8 +616,9 @@
     .card.speak { background-image:linear-gradient(0deg,rgba(11,17,20,.88),rgba(11,17,20,.08) 90%),url('https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=700&q=85'); }
     .card.vocab { background-image:linear-gradient(0deg,rgba(11,17,20,.88),rgba(11,17,20,.08) 90%),url('https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=700&q=85'); }
     .card.write { background-image:linear-gradient(0deg,rgba(11,17,20,.88),rgba(11,17,20,.08) 90%),url('https://images.unsplash.com/photo-1758525861793-f278aacf6bb5?auto=format&fit=crop&w=700&q=85'); }
+    .card.test { grid-column:1/-1; min-height:190px; background-image:linear-gradient(90deg,rgba(11,17,20,.78),rgba(11,17,20,0) 62%),url('test-simu.jpg'),url('test-simu.svg'); background-position:center,center 62%,center; }
     .card:hover { transform:translateY(-5px); }
-    .card.classhub:hover,.card.listen:hover,.card.speak:hover,.card.vocab:hover,.card.write:hover { box-shadow:0 20px 46px rgba(0,0,0,.3); }
+    .card.classhub:hover,.card.listen:hover,.card.speak:hover,.card.vocab:hover,.card.write:hover,.card.test:hover { box-shadow:0 20px 46px rgba(0,0,0,.3); }
     .card-icon { display:grid; place-items:center; width:44px; height:44px; border:1px solid rgba(255,255,255,.55); border-radius:50%; color:#fff; }
     .card-icon svg { width:20px; height:20px; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
     .card-body { position:relative; z-index:1; margin-top:auto; }
@@ -792,6 +795,22 @@
           </div>
         </a>
 
+        <!-- TEST SIMULATION -->
+        <a class="card test"
+           href="https://l2practice.github.io/test-simu/"
+           target="l2p-test" rel="noopener noreferrer"
+           aria-label="Test Simulation — IELTS Reading and Listening mock tests">
+          <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/><path d="m14.5 16.5 1.5 1.5 3-3.5"/></svg></span>
+          <div class="card-body">
+            <div class="card-name">Test Simulation</div>
+            <div class="card-tags">
+              <span class="tag">IELTS Reading</span>
+              <span class="tag">IELTS Listening</span>
+              <span class="tag">Mock Tests</span>
+            </div>
+          </div>
+        </a>
+
       </div>
     </main>
 
@@ -831,6 +850,7 @@
           <label class="cc-check"><input type="checkbox" id="cc_listening"> 🎧 Listening</label>
           <label class="cc-check"><input type="checkbox" id="cc_vocab"> 📖 Vocabulary</label>
           <label class="cc-check"><input type="checkbox" id="cc_writing"> ✍️ Writing</label>
+          <label class="cc-check"><input type="checkbox" id="cc_test"> 📝 Test Simulation</label>
           <label class="cc-check"><input type="checkbox" id="cc_classhub"> 🎓 Class Hub</label>
           <div id="ccHubWrap" style="display:none;margin-top:6px">
             <select class="su-input" id="ccHubClass"><option value="">Loading Class Hub classes…</option></select>
@@ -890,7 +910,7 @@
                    style="text-transform:uppercase;font-family:monospace;letter-spacing:0.08em">
             <button class="su-verify-btn" id="suVerify">Verify</button>
           </div>
-          <div class="su-hint">Your teacher provides this code. One code unlocks all 4 apps.</div>
+          <div class="su-hint">Your teacher provides this code. One code unlocks every app your class uses.</div>
           <div class="su-class-badge" id="suClassBadge" style="display:none"></div>
         </div>
       </div>
@@ -944,6 +964,7 @@
           <span class="su-app-pill speak-pill">🎤 Speaking</span>
           <span class="su-app-pill vocab-pill">📖 Vocabulary</span>
           <span class="su-app-pill write-pill">✍️ Writing</span>
+          <span class="su-app-pill test-pill">📝 Test Simulation</span>
         </div>
 
         <button class="su-submit" id="suSubmit">Create Account</button>
@@ -1133,7 +1154,7 @@
 
     var verifiedCode = null;
     var verifiedApps = [];
-    var APP_NAMES = { speaking:'Speaking', listening:'Listening', vocab:'Vocab', writing:'Writing', classhub:'Class Hub' };
+    var APP_NAMES = { speaking:'Speaking', listening:'Listening', vocab:'Vocab', writing:'Writing', test:'Test Simulation', classhub:'Class Hub' };
 
     function submitLabel(){
       var n = verifiedApps.length;
