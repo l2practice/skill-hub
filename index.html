@@ -160,6 +160,24 @@
       font-size:0.75rem; color:rgba(255,255,255,0.60); line-height:1.4;
     }
 
+    /* Click for a new word + back / new / redo */
+    .word-card { cursor:pointer; }
+    .word-hint { margin-left:auto; font-size:0.58rem; letter-spacing:0.08em; color:rgba(255,255,255,0.42); font-weight:600; }
+    .word-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+    .word-btn {
+      font:inherit; font-size:0.74rem; font-weight:700; letter-spacing:0.02em; color:#fff; cursor:pointer;
+      background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.28);
+      padding:6px 13px; border-radius:99px; transition:background .15s, opacity .15s, transform .15s;
+    }
+    .word-btn:hover:not(:disabled) { background:rgba(255,255,255,0.24); }
+    .word-btn:active:not(:disabled) { transform:scale(.96); }
+    .word-btn:disabled { opacity:.35; cursor:default; }
+    .word-btn.primary { background:#E8734A; border-color:#E8734A; }
+    .word-btn.primary:hover:not(:disabled) { background:#f0825b; }
+    .word-btn:focus-visible { outline:2px solid #fff; outline-offset:2px; }
+    #wordContent.word-in { animation:wordIn .28s ease-out; }
+    @keyframes wordIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+
     /* Main word area */
     .word-eyebrow {
       font-size:0.62rem; font-weight:700; letter-spacing:0.10em;
@@ -264,6 +282,7 @@
     .card:nth-child(4){animation-delay:0.26s}
     .card:nth-child(5){animation-delay:0.33s}
     .card:nth-child(6){animation-delay:0.40s}
+    .card:nth-child(7){animation-delay:0.47s}
 
     @keyframes cardIn { to{opacity:1;transform:translateY(0)} }
 
@@ -300,7 +319,7 @@
 
     /* Text white on all cards */
     .listen .card-name, .speak .card-name, .vocab .card-name,
-    .write  .card-name, .classhub .card-name, .test .card-name { color:#fff; }
+    .write  .card-name, .classhub .card-name, .test .card-name, .dictionary .card-name { color:#fff; }
 
     .listen .tag, .speak .tag, .vocab .tag,
     .write  .tag, .classhub .tag {
@@ -616,9 +635,11 @@
     .card.speak { background-image:linear-gradient(0deg,rgba(11,17,20,.88),rgba(11,17,20,.08) 90%),url('https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=700&q=85'); }
     .card.vocab { background-image:linear-gradient(0deg,rgba(11,17,20,.88),rgba(11,17,20,.08) 90%),url('https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=700&q=85'); }
     .card.write { background-image:linear-gradient(0deg,rgba(11,17,20,.88),rgba(11,17,20,.08) 90%),url('https://images.unsplash.com/photo-1758525861793-f278aacf6bb5?auto=format&fit=crop&w=700&q=85'); }
-    .card.test { grid-column:1/-1; min-height:300px; background-image:linear-gradient(90deg,rgba(11,17,20,.82),rgba(11,17,20,.15) 65%),url('test-simu.jpg'),url('test-simu.svg'); background-position:center,62% 38%,center; }
+    .card.test, .card.dictionary { grid-column:span 2; min-height:230px; }
+    .card.test { background-image:linear-gradient(0deg,rgba(11,17,20,.88),rgba(11,17,20,.06) 85%),url('test-simu.jpg'),url('test-simu.svg'); background-position:center,62% 40%,center; }
+    .card.dictionary { background-image:linear-gradient(0deg,rgba(11,17,20,.88),rgba(11,17,20,.06) 85%),url('dictionary.jpg'); background-position:center,center 52%; }
     .card:hover { transform:translateY(-5px); }
-    .card.classhub:hover,.card.listen:hover,.card.speak:hover,.card.vocab:hover,.card.write:hover,.card.test:hover { box-shadow:0 20px 46px rgba(0,0,0,.3); }
+    .card.classhub:hover,.card.listen:hover,.card.speak:hover,.card.vocab:hover,.card.write:hover,.card.test:hover,.card.dictionary:hover { box-shadow:0 20px 46px rgba(0,0,0,.3); }
     .card-icon { display:grid; place-items:center; width:44px; height:44px; border:1px solid rgba(255,255,255,.55); border-radius:50%; color:#fff; }
     .card-icon svg { width:20px; height:20px; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
     .card-body { position:relative; z-index:1; margin-top:auto; }
@@ -639,6 +660,7 @@
       .word-card { margin-bottom:62px; }
       .grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
       .card.classhub { grid-column:1/-1; grid-row:auto; min-height:290px; }
+      .card.test, .card.dictionary { grid-column:1/-1; }
     }
     @media(max-width:460px) {
       .container { padding:0 16px; }
@@ -699,7 +721,7 @@
 
     <!-- TODAY'S WORD -->
     <div class="word-card" id="today">
-      <div class="word-eyebrow">Today's Word</div>
+      <div class="word-eyebrow">Today's Word<span class="word-hint">Click for a new word</span></div>
       <div class="word-inner">
         <div class="word-main-col">
           <div class="word-skeleton" id="wordSkeleton">
@@ -709,6 +731,11 @@
             <div class="skel" style="height:13px;width:75%"></div>
           </div>
           <div id="wordContent" style="display:none"></div>
+          <div class="word-actions" id="wordActions" style="display:none">
+            <button type="button" class="word-btn" id="wordBack" disabled>↶ Back</button>
+            <button type="button" class="word-btn primary" id="wordNew">↻ New word</button>
+            <button type="button" class="word-btn" id="wordFwd" disabled>Redo ↷</button>
+          </div>
         </div>
         <div class="word-prev-col" id="wordPrev">
           <div class="word-prev-label">Previously</div>
@@ -807,6 +834,22 @@
               <span class="tag">IELTS Reading</span>
               <span class="tag">IELTS Listening</span>
               <span class="tag">Mock Tests</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- DICTIONARY -->
+        <a class="card dictionary"
+           href="https://l2practice.github.io/dictionary/"
+           target="l2p-dictionary" rel="noopener noreferrer"
+           aria-label="Dictionary — English–Vietnamese dictionary">
+          <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 1.5Zm0 0A2 2 0 0 0 6 21h13"/><path d="M8.5 8h6M8.5 11.5h4"/></svg></span>
+          <div class="card-body">
+            <div class="card-name">Dictionary</div>
+            <div class="card-tags">
+              <span class="tag">English–Vietnamese</span>
+              <span class="tag">English–English</span>
+              <span class="tag">Works offline</span>
             </div>
           </div>
         </a>
@@ -1045,27 +1088,30 @@
         .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
-    /* Previous word — shown in the "Previously" panel */
-    function loadPrev(){
-      var p=localStorage.getItem('l2p-prev-word');
-      if(!p) return;
-      try{
-        var obj=JSON.parse(p);
-        prevTerm.textContent=obj.word||'';
-        prevVi.textContent  =obj.vi||'';
-        prevCol.style.display='block';
-      }catch(e){}
-    }
+    var wordCard=document.getElementById('today');
+    var actions =document.getElementById('wordActions');
+    var btnBack =document.getElementById('wordBack');
+    var btnNew  =document.getElementById('wordNew');
+    var btnFwd  =document.getElementById('wordFwd');
 
-    function saveCurrent(obj){
-      localStorage.setItem('l2p-prev-word',JSON.stringify({word:obj.word,vi:obj.vi}));
+    var rows=null, rowsP=null;     // sheet rows, loaded once
+    var hist=[], pos=-1;           // words shown in this tab + the one on screen
+    var MAX_HIST=60;
+
+    function store(k,v){ try{ sessionStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+    function load(k){ try{ return JSON.parse(sessionStorage.getItem(k)); }catch(e){ return null; } }
+
+    function showPrev(p){
+      if(!p||!p.word){ prevCol.style.display='none'; return; }
+      prevTerm.textContent=p.word||'';
+      prevVi.textContent  =p.vi||'';
+      prevCol.style.display='block';
     }
 
     function renderWord(w){
       skeleton.style.display='none';
       content.style.display='block';
 
-      /* Build synonyms pills */
       var synPills='';
       if(w.synonyms){
         var syns=w.synonyms.split(/[,;]+/).map(function(s){return s.trim();}).filter(Boolean);
@@ -1073,8 +1119,6 @@
           return '<span class="word-syn-pill">'+esc(s)+'</span>';
         }).join('');
       }
-
-      /* Build example lines */
       var exLines='';
       if(w.ex1) exLines+='<div class="word-ex">"'+esc(w.ex1)+'"</div>';
       if(w.ex2) exLines+='<div class="word-ex">"'+esc(w.ex2)+'"</div>';
@@ -1089,55 +1133,114 @@
         (synPills?'<div class="word-section-label">Synonyms</div><div class="word-synonyms">'+synPills+'</div>':'')+
         (exLines?'<div class="word-section-label">Examples</div><div class="word-examples">'+exLines+'</div>':'');
 
-      saveCurrent({word:w.word, vi:w.vi});
+      content.classList.remove('word-in'); void content.offsetWidth; content.classList.add('word-in');
     }
 
-    function renderError(){
+    /* Draw hist[pos], refresh the buttons, the "Previously" panel and the saved state */
+    function draw(){
+      var w=hist[pos];
+      renderWord(w);
+      actions.style.display='flex';
+      btnBack.disabled = pos<=0;
+      btnFwd.disabled  = pos>=hist.length-1;
+      showPrev(pos>0 ? hist[pos-1] : load('l2p-session-prev'));
+      store('l2p-session-hist',{hist:hist,pos:pos});
+      try{ localStorage.setItem('l2p-last-word',JSON.stringify({word:w.word,vi:w.vi})); }catch(e){}
+    }
+
+    function renderError(retry){
       skeleton.style.display='none';
       content.style.display='block';
-      content.innerHTML='<div style="color:rgba(255,255,255,0.5);font-size:.85rem">Could not load today\'s word.</div>';
+      content.innerHTML='<div style="color:rgba(255,255,255,0.6);font-size:.85rem">Could not load a word. '
+        +(retry?'Click to try again.':'')+'</div>';
     }
 
-    /* Show prev immediately while fetching */
-    loadPrev();
-
-    /* Word changes every visit — random pick stored in sessionStorage
-       so refresh in same tab keeps it; new tab = new word.           */
-    var cached=sessionStorage.getItem('l2p-session-word');
-    if(cached){
-      try{ renderWord(JSON.parse(cached)); return; }catch(e){}
+    /* Sheet rows are fetched once, then every "New word" is instant */
+    function getRows(){
+      if(rows) return Promise.resolve(rows);
+      if(rowsP) return rowsP;
+      var url='https://docs.google.com/spreadsheets/d/'+SHEET_ID
+        +'/gviz/tq?tqx=out:json&gid='+GID
+        +'&tq='+encodeURIComponent('SELECT A,B,C,D,E,F,G');
+      rowsP=fetch(url)
+        .then(function(r){return r.text();})
+        .then(function(text){
+          var json=JSON.parse(text.replace(/^[^(]+\(/,'').replace(/\);?\s*$/,''));
+          var rs=json.table.rows;
+          if(!rs||!rs.length) throw new Error('empty');
+          rows=rs; return rows;
+        })
+        .catch(function(e){ rowsP=null; throw e; });
+      return rowsP;
     }
 
-    var url='https://docs.google.com/spreadsheets/d/'+SHEET_ID
-      +'/gviz/tq?tqx=out:json&gid='+GID
-      +'&tq='+encodeURIComponent('SELECT A,B,C,D,E,F,G');
+    function toWord(row,idx){
+      function cell(i){return(row.c[i]&&row.c[i].v!=null)?String(row.c[i].v).trim():'';}
+      return {idx:idx, word:cell(0), ipa:cell(1), level:cell(2), vi:cell(3),
+              synonyms:cell(4), ex1:cell(5), ex2:cell(6)};
+    }
 
-    fetch(url)
-      .then(function(r){return r.text();})
-      .then(function(text){
-        var json=JSON.parse(text.replace(/^[^(]+\(/,'').replace(/\);?\s*$/,''));
-        var rows=json.table.rows;
-        if(!rows||!rows.length){renderError();return;}
+    /* A random word that is never the one on screen and, while possible, not shown recently */
+    function pickWord(rs){
+      var cur=hist[pos]?hist[pos].idx:-1, recent={};
+      hist.slice(-12).forEach(function(h){ recent[h.idx]=1; });
+      var fresh=[], other=[];
+      for(var i=0;i<rs.length;i++){
+        if(i===cur) continue;
+        (recent[i]?other:fresh).push(i);
+      }
+      var pool=fresh.length?fresh:(other.length?other:[cur<0?0:cur]);
+      var idx=pool[Math.floor(Math.random()*pool.length)];
+      return toWord(rs[idx],idx);
+    }
 
-        /* Random index */
-        var idx=Math.floor(Math.random()*rows.length);
-        var row=rows[idx];
-        function cell(i){return(row.c[i]&&row.c[i].v!=null)?String(row.c[i].v).trim():'';}
+    var busy=false;
+    function newWord(){
+      if(busy) return;
+      busy=true; btnNew.disabled=true;
+      getRows().then(function(rs){
+        var w=pickWord(rs);
+        hist=hist.slice(0,pos+1);               // a new word replaces the redo branch
+        hist.push(w);
+        if(hist.length>MAX_HIST) hist.shift();
+        pos=hist.length-1;
+        draw();
+      }).catch(function(){
+        if(pos<0){ renderError(true); }
+        else {
+          var t=btnNew.textContent; btnNew.textContent='Could not load — retry';
+          setTimeout(function(){ btnNew.textContent=t; },2200);
+        }
+      }).then(function(){ busy=false; btnNew.disabled=false; });
+    }
+    function back(){ if(pos>0){ pos--; draw(); } }
+    function fwd(){ if(pos<hist.length-1){ pos++; draw(); } }
 
-        var w={
-          word:    cell(0),
-          ipa:     cell(1),
-          level:   cell(2),
-          vi:      cell(3),
-          synonyms:cell(4),
-          ex1:     cell(5),
-          ex2:     cell(6)
-        };
+    btnNew.addEventListener('click',function(e){ e.stopPropagation(); newWord(); });
+    btnBack.addEventListener('click',function(e){ e.stopPropagation(); back(); });
+    btnFwd.addEventListener('click',function(e){ e.stopPropagation(); fwd(); });
+    /* Clicking anywhere on the card (but not while selecting text) loads a new word */
+    wordCard.addEventListener('click',function(){
+      var sel=window.getSelection&&window.getSelection().toString();
+      if(sel) return;
+      newWord();
+    });
 
-        sessionStorage.setItem('l2p-session-word',JSON.stringify(w));
-        renderWord(w);
-      })
-      .catch(function(){renderError();});
+    /* Start: restore this tab's words (refresh keeps them), otherwise pick the first one */
+    var saved=load('l2p-session-hist');
+    var legacy=load('l2p-session-word');           // older single-word format
+    if(saved&&saved.hist&&saved.hist.length&&saved.pos>=0&&saved.pos<saved.hist.length){
+      hist=saved.hist; pos=saved.pos; draw();
+    } else if(legacy&&legacy.word){
+      store('l2p-session-prev',load('l2p-session-prev'));
+      hist=[legacy]; pos=0; draw();
+    } else {
+      var last=null;
+      try{ last=JSON.parse(localStorage.getItem('l2p-last-word')||'null'); }catch(e){}
+      store('l2p-session-prev',last);
+      showPrev(last);
+      newWord();
+    }
   })();
   /* ── SIGN UP MODAL ── */
   (function(){
